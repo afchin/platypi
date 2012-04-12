@@ -1,0 +1,239 @@
+<project name="platypi" basedir=".">
+  <property name="src" location="java"/>
+  <property name="appengine" location="third_party/appengine"/>
+  <property name="build" location="build"/>
+  <property name="android" location="android"/>
+
+  <property name="appengine.sdk.dir" location="${appengine}"/>
+  <import file="${appengine.sdk.dir}/config/user/ant-macros.xml"/>
+
+  <target name="init">
+    <tstamp/>
+    <mkdir dir="${build}"/>
+    <mkdir dir="${build}/classes"/>
+    <mkdir dir="${build}/classes-json"/>
+    <mkdir dir="${build}/testclasses"/>
+    <mkdir dir="${build}/webapp"/>
+    <mkdir dir="${build}/testing"/>
+    <mkdir dir="${build}/test_output"/>
+    <mkdir dir="${build}/checkstyle_output"/>
+    <mkdir dir="${build}/javadoc"/>
+  </target>
+
+  <path id="appengine.lib">
+    <fileset dir="${appengine}">
+      <include name="lib/shared/servlet-api.jar"/>
+      <include name="lib/impl/appengine-api.jar"/>
+      <include name="lib/user/orm/jdo2-api-2.3-eb.jar"/>
+    </fileset>
+  </path>
+
+  <path id="appengine.testlib">
+    <fileset dir="${appengine}">
+      <include name="lib/testing/appengine-testing.jar"/>
+      <include name="lib/impl/appengine-api-labs.jar"/>
+      <include name="lib/impl/appengine-api-stubs.jar"/>
+    </fileset>
+  </path>
+
+  <path id="appengine.tools.classpath">
+    <fileset dir="${appengine}">
+      <include name="lib/appengine-tools-api.jar"/>
+    </fileset>
+  </path>
+
+  <path id="junit">
+    <fileset dir="third_party/junit">
+      <include name="junit-4.10.jar"/>
+    </fileset>
+  </path>
+
+  <fileset id="appengine.user.lib"
+           dir="${appengine}/lib/user">
+    <include name="*.jar"/>
+    <include name="orm/*.jar"/>
+  </fileset>
+
+  <target name="checkstyle" depends="init">
+    <taskdef resource="checkstyletask.properties">
+      <classpath>
+        <pathelement path="third_party/checkstyle/checkstyle-5.5-all.jar"/>
+      </classpath>
+    </taskdef>
+
+    <checkstyle config="analysis/android_checks.xml" classpathRef="test.classpath"
+                failOnViolation="false">
+      <fileset dir="${src}" includes="**/*.java"/>
+      <fileset dir="${android}/src" includes="**/*.java"/>
+      <formatter type="plain"/>
+      <formatter type="xml" toFile="${build}/checkstyle_output/errors.xml"/>
+    </checkstyle>
+  </target>
+
+  <target name="compilejson" depends="init">
+    <javac includeAntRuntime="false"
+           srcdir="third_party/json"
+           destdir="${build}/classes-json">
+      <classpath>
+        <path refid="junit"/>
+      </classpath>
+    </javac>
+  </target>
+
+  <path id="json">
+    <pathelement path="${build}/classes-json"/>
+  </path>
+
+  <target name="compile" depends="init,checkstyle,compilejson">
+    <property name="cpbuilt" refid="appengine.lib"/>
+    <echo message="appengine.lib = ${cpbuilt}"/>
+    <javac includeAntRuntime="false"
+           sourcePath=""
+           srcdir="${src}"
+           destdir="${build}/classes">
+      <exclude name="**/*Test.java"/>
+      <exclude name="**/Mock*.java"/>
+      <classpath>
+        <path refid="appengine.lib"/>
+        <path refid="json"/>
+      </classpath>
+    </javac>
+
+    <mkdir dir="${build}/classes/META-INF"/>
+    <copy file="${src}/edu/caltech/cs3/cms/model/jdoconfig.xml"
+          todir="${build}/classes/META-INF"/>
+
+    <!-- process JDO class files -->
+    <!-- Each JDO persistence class must be enhanced -->
+    <!-- to add the machinery to write/read it from the data store -->
+    <macrodef name="enhance-jdo-class">
+      <attribute name="classfile"/>
+      <sequential>
+        <java classname="com.google.appengine.tools.enhancer.Enhance" fork="true">
+          <classpath>
+            <path refid="appengine.tools.classpath"/>
+            <pathelement path="${build}/classes"/>
+          </classpath>
+          <arg value="${build}/classes/@{classfile}"/>
+        </java>
+      </sequential>
+    </macrodef>
+    <enhance-jdo-class classfile="edu/caltech/cs3/cms/model/Student.class"/>
+    <enhance-jdo-class classfile="edu/caltech/cs3/cms/model/Team.class"/>
+    <enhance-jdo-class classfile="edu/caltech/cs3/cms/model/Build.class"/>
+
+  </target>
+
+  <path id="test.classpath">
+    <path refid="appengine.lib"/>
+    <path refid="appengine.testlib"/>
+    <path refid="junit"/>
+    <path refid="json"/>
+    <pathelement path="third_party/spring/dist/org.springframework.test-3.1.0.RELEASE.jar"/>
+    <pathelement path="third_party/spring/dist/org.springframework.core-3.1.0.RELEASE.jar"/>
+    <pathelement path="third_party/apache_commons/logging/commons-logging-1.1.1.jar"/>
+    <path path="${build}/classes"/>
+  </path>
+
+  <target name="compiletest" depends="init,compile">
+    <property name="junitpath" refid="junit"/>
+    <echo message="junit = ${junitpath}"/>
+    <javac includeAntRuntime="false"
+           debug="on"
+           sourcepath=""
+           srcdir="${src}"
+           destdir="${build}/testclasses">
+      <include name="**/*Test.java"/>
+      <include name="**/Mock*.java"/>
+      <classpath>
+        <path refid="test.classpath"/>
+      </classpath>
+    </javac>
+  </target>
+
+  <target name="war" depends="compile">
+    <mkdir dir="${build}/temp_flatlib"/>
+    <copy todir="${build}/temp_flatlib" flatten="true">
+      <fileset refid="appengine.user.lib"/>
+    </copy>
+    <copy todir="${build}/temp_html/cms">
+      <fileset dir="html"/>
+    </copy>
+    <war destfile="${build}/cms.war" webxml="WEB-INF/web.xml">
+      <lib dir="${build}/temp_flatlib"/>
+      <classes dir="${build}/classes"/>
+      <classes dir="${build}/classes-json"/>
+      <webinf dir="WEB-INF">
+        <include name="appengine-web.xml"/>
+        <include name="logging.properties"/>
+      </webinf>
+      <fileset dir="${build}/temp_html"/>
+    </war>
+    <delete dir="${build}/temp_flatlib"/>
+    <delete dir="${build}/temp_html"/>
+  </target>
+
+  <target name="unwar" depends="war">
+    <unwar src="${build}/cms.war"
+           dest="${build}/webapp"/>
+  </target>
+
+  <target name="appserver" depends="unwar">
+    <dev_appserver war="${build}/webapp" address="localhost" port="8888"/>
+  </target>
+
+  <target name="runtests" depends="compiletest">
+    <delete includeEmptyDirs="true">
+      <fileset dir="${build}/test_output" includes="**/*"/>
+    </delete>
+
+    <junit printsummary="yes" haltonfailure="no" outputtoformatters="true"
+           failureproperty="junit.test.failure">
+      <sysproperty key="test.tempdir" value="${build}/testing"/>
+      <formatter type="plain" usefile="false"/>
+      <formatter type="xml"/>
+      <classpath>
+        <path refid="test.classpath"/>
+        <path path="${build}/classes"/>
+        <pathelement path="${build}/testclasses"/>
+        <path>
+          <fileset refid="appengine.user.lib"/>
+        </path>
+        <path refid="appengine.tools.classpath"/>
+      </classpath>
+
+      <batchtest todir="${build}/test_output" unless="junit.test">
+        <fileset dir="${src}">
+          <include name="**/*Test.java"/>
+        </fileset>
+      </batchtest>
+
+      <test name="${junit.test}" if="junit.test">
+      </test>
+    </junit>
+    <fail if="junit.test.failure" message="TEST FAILURES"/>
+  </target>
+
+  <target name="javadoc" depends="init">
+    <javadoc destdir="${build}/javadoc"
+             packagenames="edu.caltech.cs3.*"
+             use="true">
+      <fileset dir="${src}">
+        <include name="**/*.java"/>
+        <exclude name="**/*Test.java"/>
+      </fileset>
+      <classpath>
+        <path refid="test.classpath"/>
+      </classpath>
+    </javadoc>
+  </target>
+
+  <target name="clean">
+    <delete dir="${build}" includeEmptyDirs="true">
+    </delete>
+  </target>
+
+  <target name="app">
+    <ant dir="${android}" target="release"></ant>
+  </target>
+</project>
