@@ -1,2 +1,5 @@
 android/bin/
 android/gen/
+android/.classpath
+android/.project
+build/
