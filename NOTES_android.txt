@@ -1,0 +1,6 @@
+# See http://developer.android.com/guide/developing/projects/projects-cmdline.html
+
+# New android project created with
+android create project --target 1 --name Platypi --path ./android --activity CollectDataActivity --package edu.caltech.cs3.platypi
+
+
