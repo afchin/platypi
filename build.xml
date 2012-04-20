@@ -1,5 +1,6 @@
 <project name="platypi" basedir=".">
-  <property name="src" location="java"/>
+  <property name="src" location="platypi/src"/>
+  <property name="test" location="platypi/test"/>
   <property name="appengine" location="third_party/appengine"/>
   <property name="build" location="build"/>
   <property name="android" location="android"/>
@@ -100,8 +101,8 @@
     </javac>
 
     <mkdir dir="${build}/classes/META-INF"/>
-    <copy file="${src}/edu/caltech/cs3/cms/model/jdoconfig.xml"
-          todir="${build}/classes/META-INF"/>
+    <!-- <copy file="${src}/edu/caltech/cs3/cms/model/jdoconfig.xml"
+          todir="${build}/classes/META-INF"/> -->
 
     <!-- process JDO class files -->
     <!-- Each JDO persistence class must be enhanced -->
@@ -141,7 +142,7 @@
     <javac includeAntRuntime="false"
            debug="on"
            sourcepath=""
-           srcdir="${src}"
+           srcdir="${test}"
            destdir="${build}/testclasses">
       <include name="**/*Test.java"/>
       <include name="**/Mock*.java"/>
@@ -203,7 +204,7 @@
       </classpath>
 
       <batchtest todir="${build}/test_output" unless="junit.test">
-        <fileset dir="${src}">
+        <fileset dir="${test}">
           <include name="**/*Test.java"/>
         </fileset>
       </batchtest>
