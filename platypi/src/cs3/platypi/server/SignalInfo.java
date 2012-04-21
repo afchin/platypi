@@ -1,14 +1,17 @@
 package cs3.platypi.server;
 
+import com.google.appengine.api.datastore.Key;
+
+import cs3.platypi.shared.SignalMetadata;
+
 import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
 
-import com.google.appengine.api.datastore.Key;
-
 @PersistenceCapable
 public class SignalInfo {
+    
     @PrimaryKey
     @Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
     private Key key;
@@ -27,6 +30,10 @@ public class SignalInfo {
         this.latitude = latitude;
         this.longitude = longitude;
         this.signal = signal;
+    }
+
+    public SignalMetadata getSignalMetadata() {
+        return new SignalMetadata(latitude, longitude, signal);
     }
 
     public double getLatitude() {

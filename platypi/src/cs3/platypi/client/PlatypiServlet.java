@@ -1,4 +1,4 @@
-package cs3.platypi.webapp;
+package cs3.platypi.client;
 
 import java.io.IOException;
 import javax.servlet.http.*;

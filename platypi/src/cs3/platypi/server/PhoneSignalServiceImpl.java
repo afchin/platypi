@@ -6,8 +6,9 @@ import javax.jdo.Extent;
 import javax.jdo.PersistenceManager;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
-import cs3.platypi.webapp.PhoneSignalService;
+import cs3.platypi.client.PhoneSignalService;
 import cs3.platypi.server.PMF;
+import cs3.platypi.shared.SignalMetadata;
 
 /**
  * The server side implementation of the RPC service.
@@ -16,15 +17,16 @@ import cs3.platypi.server.PMF;
 public class PhoneSignalServiceImpl extends RemoteServiceServlet implements PhoneSignalService {
 
     @Override
-    public List<SignalInfo> getSignalList() {
+    public List<SignalMetadata> getSignalList() {
         PersistenceManager manager = PMF.getManager();
         try {
+            ArrayList<SignalMetadata> signalInfo = new ArrayList<SignalMetadata>();
             Extent<SignalInfo> allSignalInfo = manager.getExtent(SignalInfo.class);
-            ArrayList<SignalInfo> signalInfo = new ArrayList<SignalInfo>();
 
             for (SignalInfo s : allSignalInfo) {
-                signalInfo.add(s);
+                signalInfo.add(s.getSignalMetadata());
             }
+
             return signalInfo;
         } finally {
             manager.close();
@@ -32,10 +34,14 @@ public class PhoneSignalServiceImpl extends RemoteServiceServlet implements Phon
     }
 
     @Override
-    public void saveSignalInfo(List<SignalInfo> signalInfo) {
+    public void saveSignalInfo(List<SignalMetadata> signalInfo) {
         PersistenceManager manager = PMF.getManager();
         try {
-            manager.makePersistentAll(signalInfo);
+            List<SignalInfo> signals = new ArrayList<SignalInfo>();
+            for (SignalMetadata s : signalInfo) {
+                signals.add(new SignalInfo(s.getLatitude(), s.getLongitude(), s.getSignal()));
+            }
+            manager.makePersistentAll(signals);
         } finally {
             manager.close();
         }
