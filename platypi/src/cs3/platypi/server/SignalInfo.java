@@ -11,7 +11,6 @@ import javax.jdo.annotations.PrimaryKey;
 
 @PersistenceCapable
 public class SignalInfo {
-    
     @PrimaryKey
     @Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
     private Key key;
