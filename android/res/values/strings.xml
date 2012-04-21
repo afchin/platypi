@@ -4,4 +4,6 @@
     <string name="reset">Reset</string>
     <string name="getdata">Get Data</string>
     <string name="original_text">Original text</string>
+    <string name="start_service">Start Service</string>
+    <string name="stop_service">Stop Service</string>
 </resources>

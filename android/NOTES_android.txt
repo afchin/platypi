@@ -20,3 +20,5 @@ ant
 # http://www.android10.org/index.php/articleslocationmaps/209-obtaining-user-location
 # http://www.android10.org/index.php/forums/44-maplocation/868-tutorialget-gsm-signal
 
+# Fetch data file from device with the command
+adb pull mnt/sdcard/Android/data/edu.caltech.cs3.platypi/files/CollectDataData.txt ./
