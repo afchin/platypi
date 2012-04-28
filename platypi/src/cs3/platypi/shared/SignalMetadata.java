@@ -43,4 +43,8 @@ public class SignalMetadata implements IsSerializable {
         this.signal = signal;
     }
 
+    public String toString(){
+      return ((Double)latitude).toString() + " " + ((Double)longitude).toString() +
+          " " + ((Integer)signal).toString();
+    }
 }

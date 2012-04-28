@@ -1,42 +1,210 @@
 package cs3.platypi.client;
 
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.ui.RootPanel;
+import com.google.gwt.core.client.EntryPoint;
+import com.google.gwt.dom.client.Style.Unit;
+import com.google.gwt.maps.client.InfoWindowContent;
+import com.google.gwt.maps.client.MapWidget;
+import com.google.gwt.maps.client.Maps;
+import com.google.gwt.maps.client.control.LargeMapControl;
+import com.google.gwt.maps.client.geom.LatLng;
+import com.google.gwt.maps.client.geom.Size;
+import com.google.gwt.maps.client.overlay.Icon;
+import com.google.gwt.maps.client.overlay.Marker;
+import com.google.gwt.maps.client.overlay.MarkerOptions;
+import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.ComplexPanel;
+import com.google.gwt.user.client.ui.DockLayoutPanel;
+import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.LayoutPanel;
+import com.google.gwt.user.client.ui.RichTextArea;
+import com.google.gwt.user.client.ui.RootLayoutPanel;
+import com.google.gwt.user.client.ui.TextBox;
+import com.google.gwt.user.client.ui.VerticalPanel;
+
+import cs3.platypi.shared.SignalMetadata;
 
 public class PhoneSignalEntryPoint implements EntryPoint, ValueChangeHandler<String> {
+  final LatLng CALTECH = LatLng.newInstance(34.139, -118.124);
+  final LatLng CALTECH2 = LatLng.newInstance(34.15, -118.124);
+  final LatLng CALTECH1 = LatLng.newInstance(34.139, -118.129);
 
-    PhoneSignal collecter;
+  final String WHITE = "http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%E2%80%A2|FFFFFF";
+  final String YELLOW = "http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%E2%80%A2|E8F00C";
+  final String GREEN = "http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%E2%80%A2|0CF05F";
+  final String RED = "http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%E2%80%A2|F00C6B";
+  final String ORANGE = "http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%E2%80%A2|E0A21B";
 
-    /**
-     * Create a remote service proxy to talk to the server-side service.
-     */
-    private final PhoneSignalServiceAsync collabService = GWT.create(PhoneSignalService.class);
+  final RichTextArea latitude = new RichTextArea();
+  final RichTextArea longitude = new RichTextArea();
+  PhoneSignal collecter;
 
-    /**
-     * Operate on history tokens.
-     * 
-     * @param event
-     */
-    public void onValueChange(ValueChangeEvent<String> event) {
+  private LatLng center;
+  private VerticalPanel vp;
+  protected MapWidget map;
+  /**
+   * Create a remote service proxy to talk to the server-side service.
+   */
+  private final PhoneSignalServiceAsync collabService = GWT.create(PhoneSignalService.class);
 
+  /**
+   * Operate on history tokens.
+   * 
+   * @param event
+   */
+  public void onValueChange(ValueChangeEvent<String> event) {
+
+  }
+
+  /**
+   * This is the entry point method, meaning the first method called when this
+   * module is initialized.
+   */
+  public void onModuleLoad() {
+    collecter = new PhoneSignal(collabService);
+    
+    center = CALTECH;
+    // Make the loading display invisible and the application visible.
+    //          RootPanel.get("application").add(collecter);
+    //      RootPanel.get("loading").setVisible(false);
+
+
+    latitude.setText("latitude");
+    latitude.setHeight("40px");
+    latitude.setWidth("150px");
+    longitude.setText("longitude");
+    longitude.setHeight("40px");
+    longitude.setWidth("150px");
+    Button setLoc = new Button("Set map center", new ClickHandler() {
+      @Override
+      public void onClick(ClickEvent event) {
+        center = LatLng.newInstance(Double.parseDouble(latitude.getText()), Double.parseDouble(longitude.getText()));
+        Maps.loadMapsApi("AIzaSyC7K_2VTNtYJH8uz7pDqa5G5MebAwe309k", "2", false, new Runnable() {
+          public void run() {
+            buildUi();
+          }
+        });
+
+      }
+    });
+
+    Button caltech = new Button("Center at Caltech", new ClickHandler() {
+      @Override
+      public void onClick(ClickEvent event) {
+        // TODO Auto-generated method stub
+        center = CALTECH;
+        latitude.setText(Double.toString(CALTECH.getLatitude()));
+        longitude.setText(Double.toString(CALTECH.getLongitude()));
+        Maps.loadMapsApi("AIzaSyC7K_2VTNtYJH8uz7pDqa5G5MebAwe309k", "2", false, new Runnable() {
+          public void run() {
+            buildUi();
+            addPoints();
+          }
+        });
+      }
+
+    });
+
+    HorizontalPanel hp = new HorizontalPanel();
+    hp.add(latitude);
+    hp.add(longitude);
+    hp.add(setLoc);
+    hp.add(caltech);
+
+    vp = new VerticalPanel();
+
+    vp.add(hp);
+    vp.add(collecter);
+    RootPanel.get("buttons").add(vp);
+  }
+
+  private void addPoints(){
+    List<SignalMetadata> list = collecter.returnMetadata();
+    System.out.println(list.size());
+    for (SignalMetadata pt: list){
+      System.out.println(pt.getLatitude() + pt.getLongitude());
+      LatLng newpt = LatLng.newInstance(pt.getLatitude(), pt.getLongitude());
+      String color;
+      int strength = pt.getSignal();
+      if (strength < 10){
+        color = RED;
+      } else if (strength < 20) {
+        color = ORANGE;
+      } else if (strength < 30) {
+        color = YELLOW;
+      } else if (strength <= 31) {
+        color = GREEN;
+      } else {
+        color = WHITE;
+      }
+      Icon icon = Icon.newInstance(color);
+      icon.setIconSize(Size.newInstance(20, 34));
+      MarkerOptions ops = MarkerOptions.newInstance(icon);
+      Marker marker = new Marker(newpt, ops);
+      map.addOverlay(marker);
     }
+  }
+  
+  private void buildUi() {
+    map = new MapWidget(center, 2);
+    map.setSize("100%", "100%");
+    // Add some controls for the zoom level
+    map.addControl(new LargeMapControl());
+    map.setZoomLevel(17);
 
-    /**
-     * This is the entry point method, meaning the first method called when this
-     * module is initialized.
-     */
-    public void onModuleLoad() {
+    // Add a marker
+//    map.addOverlay(new Marker(CALTECH));
 
-        collecter = new PhoneSignal(collabService);
+    // Add an info window to highlight a point of interest
+    //      map.getInfoWindow().open(map.getCenter(),
+    //          new InfoWindowContent("World's Largest Ball of Sisal Twine"));
 
-        // Make the loading display invisible and the application visible.
-        RootPanel.get("application").add(collecter);
-        RootPanel.get("loading").setVisible(false);
+//    HashMap<LatLng, String> pts = new HashMap<LatLng, String>();
+//    pts.put(CALTECH, GREEN);
+//    pts.put(CALTECH1, WHITE);
+//    pts.put(CALTECH2, RED);
+//
+//    Set<LatLng> markers = pts.keySet();
+//    for (LatLng pt: markers){
+//      Icon icon = Icon.newInstance((String) pts.get(pt));
+//      icon.setIconSize(Size.newInstance(20, 34));
+//      MarkerOptions ops = MarkerOptions.newInstance(icon);
+//      Marker marker = new Marker(pt, ops);
+//      map.addOverlay(marker);
+//    }
 
-    }
+    LayoutPanel dock = new LayoutPanel();
+    dock.add(map);
+    //    vp.add(map);
+    RootLayoutPanel.get().add(dock);
+    //    vp.add(dock);
+
+    //          final DockLayoutPanel dock = new DockLayoutPanel(Unit.PX);
+    //          dock.addSouth(collecter, 500);      
+    //          dock.add(map);
+
+
+    // Add the map to the HTML host page
+    //    vp.add(dock);
+    //    RootPanel.get("application").add(map);
+    //    map.checkResizeAndCenter();
+
+
+  }
 
 }
