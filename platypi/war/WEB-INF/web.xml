@@ -12,7 +12,7 @@
 	<servlet-mapping>
 		<servlet-name>Platypi</servlet-name>
 		<url-pattern>/platypi</url-pattern>
-	</servlet-mapping> -->
+	</servlet-mapping> 
 	<servlet>
     	<servlet-name>PhoneSignalMessageServlet</servlet-name>
     	<servlet-class>cs3.platypi.server.PhoneSignalMessageServlet</servlet-class>
@@ -21,7 +21,7 @@
  	<servlet-mapping>
     	<servlet-name>PhoneSignalMessageServlet</servlet-name>
    		<url-pattern>/signal/protoc</url-pattern>
-  	</servlet-mapping>
+  	</servlet-mapping> -->
   	
   	<servlet>
     	<servlet-name>PhoneSignalHttpServlet</servlet-name>

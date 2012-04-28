@@ -1,0 +1,2 @@
+serviceClass: cs3.platypi.client.PhoneSignalService
+path: 09FB2E9EAB6723A0D1D29CB865B4B327.gwt.rpc
