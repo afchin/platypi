@@ -12,6 +12,7 @@ import android.util.Log;
  */
 public class CollectDataService extends Service {
     private final String TAG = "CollectDataService";
+    //TODO: make interval configurable through prefs activity
     private final int INTERVAL_ms = 30 * 1000; // one minute in milliseconds
     private boolean running = false;
     private SignalFinderApp app;
@@ -21,8 +22,7 @@ public class CollectDataService extends Service {
         return null;
     }
 
-    @Override
-    public void onCreate() {
+    @Override public void onCreate() {
         Log.d(TAG, "onCreate");
         app = (SignalFinderApp) getApplication();
         super.onCreate();
@@ -55,7 +55,7 @@ public class CollectDataService extends Service {
                     }
                 }
             }
-        }.start();
+        } .start();
         return super.onStartCommand(intent, flags, startId);
     }
 

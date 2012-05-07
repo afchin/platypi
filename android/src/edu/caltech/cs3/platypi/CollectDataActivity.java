@@ -3,6 +3,7 @@ package edu.caltech.cs3.platypi;
 import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -31,21 +32,25 @@ public class CollectDataActivity extends Activity {
 
     public void clearDb(View v) {
         mainText.setText(R.string.original_text);
-        app.localSignalData.dropData(); 
+        app.localSignalData.dropData();
     }
 
     public void showLocalData(View v) {
         mainText.setText("");
         Cursor cursor = app.localSignalData.cursor();
+        mainText.append(String.format("%s\n%s\n%s", Build.MODEL, Build.PRODUCT, Build.FINGERPRINT));
         while (cursor.moveToNext()) {
-            int key = cursor.getInt(cursor.getColumnIndex(LocalSignalData.C_ID));
-            double lat = cursor.getDouble(cursor.getColumnIndex(LocalSignalData.C_LATITTUDE));
-            double lon = cursor.getDouble(cursor.getColumnIndex(LocalSignalData.C_LONGITUDE));
-            int sig = cursor.getInt(cursor.getColumnIndex(LocalSignalData.C_SIGNAL));
-            mainText.append(String.format("%d,%f,%f,%d%n", key,lat,lon,sig));
+            mainText.append(String.format("%f,%f,%d,%d,%d,%d,%d%n",
+                    cursor.getDouble(cursor.getColumnIndex(LocalSignalData.C_LATITTUDE)),
+                    cursor.getDouble(cursor.getColumnIndex(LocalSignalData.C_LONGITUDE)),
+                    cursor.getDouble(cursor.getColumnIndex(LocalSignalData.C_ACCURACY)),
+                    cursor.getInt(cursor.getColumnIndex(LocalSignalData.C_PHONE_TYPE)),
+                    cursor.getLong(cursor.getColumnIndex(LocalSignalData.C_TIME)),
+                    cursor.getInt(cursor.getColumnIndex(LocalSignalData.C_SIGNAL))
+                    ));
         }
     }
-    
+
     public void sendLocalData(View v) {
         app.sendLocalData();
     }
@@ -79,5 +84,5 @@ public class CollectDataActivity extends Activity {
         Log.d(TAG,"onDestroy");
         super.onDestroy();
     }
-    
+
 }
