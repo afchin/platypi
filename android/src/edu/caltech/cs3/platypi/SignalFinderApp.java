@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.http.NameValuePair;
@@ -18,6 +19,7 @@ import org.apache.http.message.BasicNameValuePair;
 import android.app.Application;
 import android.content.Context;
 import android.database.Cursor;
+import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -25,6 +27,7 @@ import android.os.Bundle;
 import android.telephony.PhoneStateListener;
 import android.telephony.SignalStrength;
 import android.telephony.TelephonyManager;
+import android.util.Log;
 
 /**
  * Collects location and signal strength. Location is collected from GPS, with
@@ -37,7 +40,6 @@ public class SignalFinderApp extends Application {
     private LocationManager locationManager;
     private TelephonyManager telManager;
     private SignalStrengthListener signalStrengthListener;
-    private boolean updated = false;
     LocalSignalData localSignalData;
     public SignalInfo signalInfo;
     //TODO: change apiroot to be mutable through prefs, with the following default
@@ -48,6 +50,7 @@ public class SignalFinderApp extends Application {
     /** Registers listeners for signal strength and location when app is first started. */
     @Override public void onCreate() {
         super.onCreate();
+        signalInfo = new SignalInfo();
         localSignalData = new LocalSignalData(this);
 
         signalStrengthListener = new SignalStrengthListener();
@@ -59,33 +62,33 @@ public class SignalFinderApp extends Application {
             @Override public void onProviderEnabled(String provider) { }
             @Override public void onProviderDisabled(String provider) { }
             @Override public void onLocationChanged(Location location) {
-                signalInfo.latitude = location.getLatitude();
-                signalInfo.longitude = location.getLongitude();
-                signalInfo.accuracy = (double) location.getAccuracy();
-                updated = true;
+                signalInfo.setLatitude(location.getLatitude());
+                signalInfo.setLongitude(location.getLongitude());
+                signalInfo.setAccuracy((int) location.getAccuracy());
+                signalInfo.setTime_seconds(new Date().getTime() / 1000);
             }
         };
         locationManager = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
-        locationManager.requestLocationUpdates(
-                LocationManager.GPS_PROVIDER, 0, 0, locationListener);
+        Criteria criteria = new Criteria();
+        criteria.setAccuracy(Criteria.ACCURACY_FINE);
+        criteria.setAltitudeRequired(false);
+        criteria.setBearingRequired(false);
+        criteria.setCostAllowed(false);
+        criteria.setPowerRequirement(Criteria.POWER_LOW); // this gets relaxed if necessary
+        String provider = locationManager.getBestProvider(criteria, false);
+        locationManager.requestLocationUpdates(provider, 0, 0, locationListener);
     }
-
-    /** False if current data readings have already been recorded. */
-    public boolean hasUpdated() { return updated; }
-
-    /** To be called each time data is recorded to prevent repetition. */
-    public void invalidate() { updated = false; }
 
     /** Adds current SignalInfo as new row of local signal data table. */
     public void insertCurrentData() {
-        if (updated) {
-            localSignalData.insert(signalInfo.latitude,
-                    signalInfo.longitude,
-                    signalInfo.accuracy,
-                    signalInfo.phoneType,
-                    signalInfo.time_seconds,
-                    signalInfo.sigStrength_dBm);
-            invalidate();
+        if (signalInfo.gotAllData()) {
+            localSignalData.insert(signalInfo.getLatitude(),
+                    signalInfo.getLongitude(),
+                    signalInfo.getAccuracy(),
+                    signalInfo.getPhoneType(),
+                    signalInfo.getTime_seconds(),
+                    signalInfo.getSigStrength_dBm());
+            signalInfo = new SignalInfo();
         }
     }
 
@@ -111,18 +114,18 @@ public class SignalFinderApp extends Application {
                     int numData = 0;
                     while (cursor.moveToNext()) {
                         SignalInfo sigInfo = new SignalInfo();
-                        sigInfo.latitude = cursor.getDouble(cursor
-                                .getColumnIndex(LocalSignalData.C_LATITTUDE));
-                        sigInfo.longitude = cursor.getDouble(cursor
-                                .getColumnIndex(LocalSignalData.C_LONGITUDE));
-                        sigInfo.accuracy = cursor.getDouble(cursor
-                                .getColumnIndex(LocalSignalData.C_ACCURACY));
-                        sigInfo.phoneType = cursor.getInt(cursor
-                                .getColumnIndex(LocalSignalData.C_PHONE_TYPE));
-                        sigInfo.time_seconds = cursor.getLong(cursor
-                                .getColumnIndex(LocalSignalData.C_TIME));
-                        sigInfo.sigStrength_dBm = cursor.getInt(cursor
-                                .getColumnIndex(LocalSignalData.C_SIGNAL));
+                        sigInfo.setLatitude(cursor.getDouble(cursor
+                                .getColumnIndex(LocalSignalData.C_LATITTUDE)));
+                        sigInfo.setLongitude(cursor.getDouble(cursor
+                                .getColumnIndex(LocalSignalData.C_LONGITUDE)));
+                        sigInfo.setAccuracy(cursor.getInt(cursor
+                                .getColumnIndex(LocalSignalData.C_ACCURACY)));
+                        sigInfo.setPhoneType(cursor.getInt(cursor
+                                .getColumnIndex(LocalSignalData.C_PHONE_TYPE)));
+                        sigInfo.setTime_seconds(cursor.getLong(cursor
+                                .getColumnIndex(LocalSignalData.C_TIME)));
+                        sigInfo.setSigStrength_dBm(cursor.getInt(cursor
+                                .getColumnIndex(LocalSignalData.C_SIGNAL)));
 
                         numData++;
                         nameValuePairs.addAll(sigInfo.nameValuePairs(numData));
@@ -165,8 +168,9 @@ public class SignalFinderApp extends Application {
     /** When signal strength changes, records network type, signal strength, cid, and lac. */
     private class SignalStrengthListener extends PhoneStateListener {
         @Override public void onSignalStrengthsChanged(SignalStrength signalStrength) {
-            // network type
-            signalInfo.phoneType = telManager.getPhoneType();
+            // network type and time
+            signalInfo.setPhoneType(telManager.getPhoneType());
+            signalInfo.setTime_seconds((new Date()).getTime() / 1000);
 
             // signal strength
             switch (telManager.getPhoneType()) {
@@ -176,22 +180,22 @@ public class SignalFinderApp extends Application {
                 // see http://developer.android.com/reference/android/telephony/NeighboringCellInfo.html#getRssi%28%29
                 int asu = signalStrength.getGsmSignalStrength();
                 if (asu == 99) {
-                    signalInfo.sigStrength_dBm = 0;
-                    signalInfo.phoneType = TelephonyManager.PHONE_TYPE_NONE; // per SignalFinder API 1.0
+                    signalInfo.setSigStrength_dBm(0);
+                    signalInfo.setPhoneType(TelephonyManager.PHONE_TYPE_NONE); // per SignalFinder API 1.0
                 } else if (asu==0) {
-                    signalInfo.sigStrength_dBm = 0; // per SignalFinder API 1.0
+                    signalInfo.setSigStrength_dBm(0); // per SignalFinder API 1.0
                 } else {
-                    signalInfo.sigStrength_dBm = -113 + 2 * asu;
+                    signalInfo.setSigStrength_dBm(-113 + 2 * asu);
                 }
                 break;
             case (TelephonyManager.PHONE_TYPE_CDMA):
-                signalInfo.sigStrength_dBm = signalStrength.getCdmaDbm();
+                signalInfo.setSigStrength_dBm(signalStrength.getCdmaDbm());
                 break;
             default: // TelephonyManager.PHONE_TYPE_NONE:
-                signalInfo.sigStrength_dBm = 0; // per SignalFinder API 1.0
+                signalInfo.setSigStrength_dBm(0); // per SignalFinder API 1.0
             }
 
-            updated = true;
+            Log.d("SignalStrengthListener",String.format("%d,%d", signalInfo.getPhoneType(), signalInfo.getSigStrength_dBm()));
             super.onSignalStrengthsChanged(signalStrength);
         }
     }

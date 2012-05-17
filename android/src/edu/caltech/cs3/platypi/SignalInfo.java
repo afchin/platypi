@@ -7,16 +7,40 @@ import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 
 /** Container class for signal data. */
-//All fields intended to be read/writable, so they are made public
-//rather than using getters and setters.
 public class SignalInfo {
-    public double latitude;
-    public double longitude;
-    public double accuracy;
-    public int phoneType;
-    public long time_seconds;
-    public int sigStrength_dBm;
+    private double latitude;
+    private double longitude;
+    private int accuracy;
+    private int phoneType;
+    private long time_seconds;
+    private int sigStrength_dBm;
 
+    private boolean updated;
+    
+    public void setLatitude(double latitude) {
+        this.latitude = latitude; updated = true; }
+    public void setLongitude(double longitude) {
+        this.longitude = longitude; updated = true; }
+    public void setAccuracy(int accuracy) {
+        this.accuracy = accuracy; updated = true; }
+    public void setPhoneType(int phoneType) {
+        this.phoneType = phoneType; updated = true; }
+    public void setTime_seconds(long time_seconds) {
+        this.time_seconds = time_seconds; updated = true; }
+    public void setSigStrength_dBm(int sigStrength_dBm) {
+        this.sigStrength_dBm = sigStrength_dBm; updated = true; }
+
+    public boolean gotAllData() {
+        return updated;
+    }
+  
+    public double getLatitude() { return latitude; }
+    public double getLongitude() { return longitude; }
+    public double getAccuracy() { return accuracy; }
+    public int getPhoneType() { return phoneType; }
+    public long getTime_seconds() { return time_seconds; }
+    public int getSigStrength_dBm() { return sigStrength_dBm; }
+    
     /**
      * Returns list of name/value pairs with given integer suffix, as indicated in
      * SignalFinder API 1.0.
@@ -26,7 +50,7 @@ public class SignalInfo {
         List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
         nameValuePairs.add(new BasicNameValuePair("latitude" + i, Double.toString(latitude)));
         nameValuePairs.add(new BasicNameValuePair("longitude" + i, Double.toString(longitude)));
-        nameValuePairs.add(new BasicNameValuePair("accuracy" + i, Double.toString(accuracy)));
+        nameValuePairs.add(new BasicNameValuePair("accuracy" + i, Integer.toString(accuracy)));
         nameValuePairs.add(new BasicNameValuePair("phoneType" + i, Integer.toString(phoneType)));
         nameValuePairs.add(new BasicNameValuePair("time" + i, Long.toString(time_seconds)));
         nameValuePairs.add(new BasicNameValuePair("signal" + i, Integer.toString(sigStrength_dBm)));

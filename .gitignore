@@ -2,6 +2,8 @@ android/bin/
 android/gen/
 android/.classpath
 android/.project
+android/.checkstyle
+android/analysis/
 build/
 android/local.properties
 platypi/war/WEB-INF/lib
@@ -9,3 +11,4 @@ platypi/war/WEB-INF/classes
 platypi/war/signal/
 platypi/war/WEB-INF/deploy/
 platypi/war/WEB-INF/appengine-generated
+.project

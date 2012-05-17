@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <ListPreference
+        android:dialogTitle="Collection frequency"
+        android:entries="@array/collection_freq_options"
+        android:entryValues="@array/collection_freq_values"
+        android:key="PREF_COLLECTION_FREQ"
+        android:title="Data collection frequency" />
+    <EditTextPreference
+        android:dialogTitle="API root"
+        android:key="PREF_APIROOT"
+        android:title="API root"
+        android:defaultValue="http://proudplatypi.appspot.com" />
+    <ListPreference 
+        android:dialogTitle="Display carriers"
+        android:entries="@array/display_carriers"
+        android:entryValues="@array/display_carriers"
+        android:key="PREF_DISPLAY_CARRIERS"
+        android:title="Display carriers"
+        android:summary="which carriers you want to see"
+        />
+    
+</PreferenceScreen>

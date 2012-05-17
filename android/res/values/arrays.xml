@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="collection_freq_options">
+        <item>guess based on movement</item>
+        <item>never</item>
+        <item>20 seconds</item>
+        <item>1 minute</item>
+        <item>5 minutes</item>
+        <item>20 minutes</item>
+    </string-array>
+    <array name="collection_freq_values">
+        <item>-1</item>
+        <item>0</item>
+        <item>20</item>
+        <item>60</item>
+        <item>300</item>
+        <item>1200</item>
+    </array>
+    
+    <string-array name="display_carriers">
+        <item>My carrier</item>
+        <item>All carriers</item>
+        <item>AT&amp;T</item>
+        <item>Verizon</item>
+        <item>T-mobile</item>
+        <item>Sprint</item>
+    </string-array>
+</resources>

@@ -14,7 +14,7 @@ public class LocalSignalData {
     static final String TAG = "LocalSignalData";
 
     private static final String DB_NAME = "signaldata";
-    private static final int DB_VERSION = 2;
+    private static final int DB_VERSION = 1;
     public static final String TABLE = "localsignaldata";
     public static final String C_LATITTUDE = "latitude";
     public static final String C_LONGITUDE = "longitude";
@@ -69,7 +69,7 @@ public class LocalSignalData {
         @Override
         public void onCreate(SQLiteDatabase db) {
             String sql = String.format(
-                    "create table %s (%s int primary key, %s double, %s double, %s double, %s int, %s long, %s int)",
+                    "create table %s (%s double, %s double, %s int, %s int, %s long, %s int)",
                     TABLE, C_LATITTUDE, C_LONGITUDE, C_ACCURACY, C_PHONE_TYPE, C_TIME, C_SIGNAL);
             Log.d(TAG, "onCreate with SQL: " + sql);
             db.execSQL(sql);
