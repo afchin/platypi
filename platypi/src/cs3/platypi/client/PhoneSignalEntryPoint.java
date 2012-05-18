@@ -202,6 +202,7 @@ public class PhoneSignalEntryPoint implements EntryPoint, ValueChangeHandler<Str
       Icon icon = Icon.newInstance(color);
       icon.setIconSize(Size.newInstance(20, 34));
       MarkerOptions ops = MarkerOptions.newInstance(icon);
+      ops.setTitle(((Integer)strength).toString());
       Marker marker = new Marker(newpt, ops);
       map.addOverlay(marker);
     }
