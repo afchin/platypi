@@ -29,18 +29,17 @@ public class PhoneSignal extends Composite implements ClickHandler, ChangeHandle
     protected List<SignalMetadata> signalMetadataList = new ArrayList<SignalMetadata>();
 
     public PhoneSignal(PhoneSignalServiceAsync signalService) {
-//        this.mainSignalList = new ArrayList<String>();
         this.signalService = signalService;
 
         // Example of using saveSignal and getSignalList
         List<SignalMetadata> signalList = new ArrayList<SignalMetadata>();
         SignalMetadata s1 = new SignalMetadata(34.14, -118.13, 3);
-//        SignalMetadata s2 = new SignalMetadata(4, 5, 6);
+        SignalMetadata s2 = new SignalMetadata(4, 5, 6);
         signalList.add(s1);
-//        signalList.add(s2);
+        signalList.add(s2);
         // Do not call both save and get in the same run. 
-         saver.saveSignal(signalList);
-//        lister.getSignalList();
+//         saver.saveSignal(signalList);
+        lister.getSignalList();
 
         VerticalPanel outerVp = new VerticalPanel();
         outerVp.add(new HTML("<h2>Available Signals</h2>"));

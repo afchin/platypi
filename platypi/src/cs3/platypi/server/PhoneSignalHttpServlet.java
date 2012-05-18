@@ -8,7 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import cs3.platypi.shared.SignalMetadata;
-
+ 
 @SuppressWarnings("serial")
 public class PhoneSignalHttpServlet extends HttpServlet{
     

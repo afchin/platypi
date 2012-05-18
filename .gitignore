@@ -7,3 +7,5 @@ android/local.properties
 platypi/war/WEB-INF/lib
 platypi/war/WEB-INF/classes
 platypi/war/signal/
+platypi/war/WEB-INF/deploy/
+platypi/war/WEB-INF/appengine-generated
