@@ -30,8 +30,10 @@ import com.google.gwt.maps.client.overlay.MarkerOptions;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ComplexPanel;
 import com.google.gwt.user.client.ui.DockLayoutPanel;
+import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.LayoutPanel;
+import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.RichTextArea;
 import com.google.gwt.user.client.ui.RootLayoutPanel;
 import com.google.gwt.user.client.ui.TextBox;
@@ -57,6 +59,11 @@ public class PhoneSignalEntryPoint implements EntryPoint, ValueChangeHandler<Str
   private LatLng center;
   private VerticalPanel vp;
   protected MapWidget map;
+  private ListBox carriers;
+  // should query database to get this
+  private String[] allCarriers = {
+    "AT&T", "Verizon", "T-Mobile", "Sprint"  
+  };
   /**
    * Create a remote service proxy to talk to the server-side service.
    */
@@ -90,13 +97,21 @@ public class PhoneSignalEntryPoint implements EntryPoint, ValueChangeHandler<Str
     longitude.setText("longitude");
     longitude.setHeight("40px");
     longitude.setWidth("150px");
+    
+    carriers = new ListBox(true);
+    HTML selectCarriers = new HTML("Select carriers");
+    
+    for (String c: allCarriers){
+      carriers.addItem(c);
+    }
+    
     Button setLoc = new Button("Set map center", new ClickHandler() {
       @Override
       public void onClick(ClickEvent event) {
         center = LatLng.newInstance(Double.parseDouble(latitude.getText()), Double.parseDouble(longitude.getText()));
         Maps.loadMapsApi("AIzaSyC7K_2VTNtYJH8uz7pDqa5G5MebAwe309k", "2", false, new Runnable() {
           public void run() {
-            buildUi();
+            runApp();
           }
         });
 
@@ -112,8 +127,7 @@ public class PhoneSignalEntryPoint implements EntryPoint, ValueChangeHandler<Str
         longitude.setText(Double.toString(CALTECH.getLongitude()));
         Maps.loadMapsApi("AIzaSyC7K_2VTNtYJH8uz7pDqa5G5MebAwe309k", "2", false, new Runnable() {
           public void run() {
-            buildUi();
-            addPoints();
+            runApp();
           }
         });
       }
@@ -121,10 +135,26 @@ public class PhoneSignalEntryPoint implements EntryPoint, ValueChangeHandler<Str
     });
 
     HorizontalPanel hp = new HorizontalPanel();
-    hp.add(latitude);
-    hp.add(longitude);
-    hp.add(setLoc);
-    hp.add(caltech);
+    
+    VerticalPanel carrierSelect = new VerticalPanel();
+    carrierSelect.add(selectCarriers);
+    carrierSelect.add(carriers);
+    
+    hp.add(carrierSelect);
+    
+    HorizontalPanel latlongparam = new HorizontalPanel();
+
+    latlongparam.add(latitude);
+    latlongparam.add(longitude);
+    latlongparam.add(setLoc);
+    latlongparam.add(caltech);
+    
+    VerticalPanel addEmpty = new VerticalPanel();
+    HTML empty = new HTML("<br>");
+    addEmpty.add(empty);
+    addEmpty.add(latlongparam);
+    
+    hp.add(addEmpty);
 
     vp = new VerticalPanel();
 
@@ -133,6 +163,23 @@ public class PhoneSignalEntryPoint implements EntryPoint, ValueChangeHandler<Str
     RootPanel.get("buttons").add(vp);
   }
 
+  private void runApp(){
+    buildUi();
+    addPoints();
+    List<String> carrierParams = new ArrayList<String>();
+    for (int i = 0; i < carriers.getItemCount(); i ++){
+       if (carriers.isItemSelected(i)){
+         carrierParams.add(carriers.getItemText(i));
+       }
+    }
+    if (carrierParams.isEmpty()) {
+      // add all carriers to the list
+      for (String c: allCarriers){
+        carrierParams.add(c);
+      }
+    }
+  }
+  
   private void addPoints(){
     List<SignalMetadata> list = collecter.returnMetadata();
     System.out.println(list.size());

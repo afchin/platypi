@@ -39,8 +39,8 @@ public class PhoneSignal extends Composite implements ClickHandler, ChangeHandle
         signalList.add(s1);
 //        signalList.add(s2);
         // Do not call both save and get in the same run. 
-//         saver.saveSignal(signalList);
-        lister.getSignalList();
+         saver.saveSignal(signalList);
+//        lister.getSignalList();
 
         VerticalPanel outerVp = new VerticalPanel();
         outerVp.add(new HTML("<h2>Available Signals</h2>"));

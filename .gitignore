@@ -6,3 +6,4 @@ build/
 android/local.properties
 platypi/war/WEB-INF/lib
 platypi/war/WEB-INF/classes
+platypi/war/signal/
