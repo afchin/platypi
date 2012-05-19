@@ -15,25 +15,19 @@ public class SignalInfo {
     private long time_seconds;
     private int sigStrength_dBm;
 
-    private boolean updated;
-    
     public void setLatitude(double latitude) {
-        this.latitude = latitude; updated = true; }
+        this.latitude = latitude; }
     public void setLongitude(double longitude) {
-        this.longitude = longitude; updated = true; }
+        this.longitude = longitude; }
     public void setAccuracy(int accuracy) {
-        this.accuracy = accuracy; updated = true; }
+        this.accuracy = accuracy; }
     public void setPhoneType(int phoneType) {
-        this.phoneType = phoneType; updated = true; }
+        this.phoneType = phoneType; }
     public void setTime_seconds(long time_seconds) {
-        this.time_seconds = time_seconds; updated = true; }
+        this.time_seconds = time_seconds; }
     public void setSigStrength_dBm(int sigStrength_dBm) {
-        this.sigStrength_dBm = sigStrength_dBm; updated = true; }
+        this.sigStrength_dBm = sigStrength_dBm; }
 
-    public boolean gotAllData() {
-        return updated;
-    }
-  
     public double getLatitude() { return latitude; }
     public double getLongitude() { return longitude; }
     public double getAccuracy() { return accuracy; }

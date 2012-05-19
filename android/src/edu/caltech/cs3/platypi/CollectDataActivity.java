@@ -1,6 +1,8 @@
 package edu.caltech.cs3.platypi;
 
 import android.app.Activity;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -9,6 +11,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 /**
  * UI through which the user can start/stop the data collection service.
@@ -18,6 +21,8 @@ public class CollectDataActivity extends Activity {
     private TextView mainText;
     private final String TAG = "CollectDataActivity";
     private SignalFinderApp app;
+    //TODO: pull this number from preferences instead
+    private int interval_seconds = 30;
 
     /** Expands main.xml when activity is created, and points mainText to the text field. */
     @Override
@@ -35,11 +40,13 @@ public class CollectDataActivity extends Activity {
     }
 
     public void insertCurrentData(View v) {
-        app.insertCurrentData();
+        Intent intent = new Intent(this, SingleUpdateReceiver.class);
+        app.alarmManager.set(AlarmManager.RTC_WAKEUP, 0,
+                PendingIntent.getBroadcast(app, 0, intent, 0));
     }
-    
+
     public void showLocalData(View v) {
-        mainText.setText("");
+        mainText.setText(String.format("%s, %s%n",app.carrier,app.clientId));
         Cursor cursor = app.localSignalData.cursor();
         while (cursor.moveToNext()) {
             mainText.append(String.format("%f,%f,%d,%n%d,%d,%d%n%n",
@@ -54,7 +61,8 @@ public class CollectDataActivity extends Activity {
     }
 
     public void sendLocalData(View v) {
-        app.sendLocalData();
+//        app.sendLocalData();
+        Toast.makeText(app, "This does nothing right now.", Toast.LENGTH_SHORT).show();
     }
 
     /** Expands menu.xml when the menu is called for the first time. */
@@ -67,14 +75,12 @@ public class CollectDataActivity extends Activity {
     /** Starts/stops the service when menu item is clicked. */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        Log.d(TAG,"onOptionsItemSelected");
-        Intent serviceIntent = new Intent(this,CollectDataService.class);
         switch(item.getItemId()) {
         case R.id.start_service:
-            startService(serviceIntent);
+            app.turnAlarmOn(interval_seconds);
             return true;
         case R.id.stop_service:
-            stopService(serviceIntent);
+            app.turnAlarmOff();
             return true;
         case R.id.prefs:
             startActivity(new Intent(this,Preferences.class));

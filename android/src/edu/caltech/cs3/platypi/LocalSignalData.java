@@ -32,18 +32,17 @@ public class LocalSignalData {
         dbHelper = new DbHelper();
     }
 
-    public void insert(double latitude, double longitude, double accuracy,
-            int phoneType, long time, int signal) {
+    public void insert(SignalInfo signalInfo) {
         db = dbHelper.getWritableDatabase();
 
         ContentValues values = new ContentValues();
         // TODO: C_ID column is left empty for now, but should probably be something
-        values.put(C_LATITTUDE, latitude);
-        values.put(C_LONGITUDE, longitude);
-        values.put(C_ACCURACY, accuracy);
-        values.put(C_PHONE_TYPE, phoneType);
-        values.put(C_TIME, time);
-        values.put(C_SIGNAL, signal);
+        values.put(C_LATITTUDE, signalInfo.getLatitude());
+        values.put(C_LONGITUDE, signalInfo.getLongitude());
+        values.put(C_ACCURACY, signalInfo.getAccuracy());
+        values.put(C_PHONE_TYPE, signalInfo.getPhoneType());
+        values.put(C_TIME, signalInfo.getTime_seconds());
+        values.put(C_SIGNAL, signalInfo.getSigStrength_dBm());
 
         db.insert("localsignaldata", null, values);
     }
