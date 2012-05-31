@@ -16,23 +16,56 @@ public class SignalInfo {
     private Key key;
 
     @Persistent
+    private String clientId;
+    
+    @Persistent
+    private String carrier;
+    
+    @Persistent
     private double latitude;
 
     @Persistent
     private double longitude;
+    
+    @Persistent
+    private double accuracy;
+    
+    @Persistent
+    private String phoneType;
+    
+    @Persistent
+    private long time;
 
     @Persistent
     private int signal;
 
-    public SignalInfo(double latitude, double longitude, int signal) {
+    public SignalInfo(String clientId, String carrier, double latitude, double longitude,
+            double accuracy, String phoneType, long time, int signal) {
         super();
+        this.clientId = clientId;
+        this.carrier = carrier;
         this.latitude = latitude;
         this.longitude = longitude;
+        this.accuracy = accuracy;
+        this.phoneType = phoneType;
+        this.time = time;
         this.signal = signal;
     }
 
-    public SignalMetadata getSignalMetadata() {
-        return new SignalMetadata(latitude, longitude, signal);
+    public String getClientId() {
+        return clientId;
+    }
+
+    public void setClientId(String clientId) {
+        this.clientId = clientId;
+    }
+
+    public String getCarrier() {
+        return carrier;
+    }
+
+    public void setCarrier(String carrier) {
+        this.carrier = carrier;
     }
 
     public double getLatitude() {
@@ -51,6 +84,30 @@ public class SignalInfo {
         this.longitude = longitude;
     }
 
+    public double getAccuracy() {
+        return accuracy;
+    }
+
+    public void setAccuracy(double accuracy) {
+        this.accuracy = accuracy;
+    }
+
+    public String getPhoneType() {
+        return phoneType;
+    }
+
+    public void setPhoneType(String phoneType) {
+        this.phoneType = phoneType;
+    }
+
+    public long getTime() {
+        return time;
+    }
+
+    public void setTime(long time) {
+        this.time = time;
+    }
+
     public int getSignal() {
         return signal;
     }
@@ -59,4 +116,9 @@ public class SignalInfo {
         this.signal = signal;
     }
 
+    public SignalMetadata getSignalMetadata() {
+        return new SignalMetadata(clientId, carrier, latitude, longitude, accuracy, phoneType, time, signal);
+    }
+
+    
 }

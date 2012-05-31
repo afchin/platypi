@@ -4,6 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.jdo.Extent;
 import javax.jdo.PersistenceManager;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.json.JSONArray;
+
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 import cs3.platypi.client.PhoneSignalService;
@@ -39,7 +44,7 @@ public class PhoneSignalServiceImpl extends RemoteServiceServlet implements Phon
         try {
             List<SignalInfo> signals = new ArrayList<SignalInfo>();
             for (SignalMetadata s : signalInfo) {
-                signals.add(new SignalInfo(s.getLatitude(), s.getLongitude(), s.getSignal()));
+                signals.add(new SignalInfo(s.getClientId(), s.getCarrier(), s.getLatitude(), s.getLongitude(), s.getAccuracy(), s.getPhoneType(), s.getTime(), s.getSignal()));
             }
             manager.makePersistentAll(signals);
         } finally {

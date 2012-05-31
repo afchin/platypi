@@ -11,6 +11,7 @@
 	<classpathentry kind="lib" path="lib/gwt-maps.jar"/>
 	<classpathentry kind="lib" path="lib/gwt-servlet.jar"/>
 	<classpathentry kind="lib" path="lib/jdo2-api-2.3-eb.jar"/>
+	<classpathentry kind="lib" path="lib/json-org.jar"/>
 	<classpathentry kind="lib" path="lib/jsr107cache-1.1.jar"/>
 	<classpathentry kind="output" path="war/WEB-INF/classes"/>
 </classpath>

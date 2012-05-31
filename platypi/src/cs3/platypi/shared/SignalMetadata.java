@@ -4,19 +4,46 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 
 public class SignalMetadata implements IsSerializable {
 
+    private String clientId;
+    private String carrier;
     private double latitude;
     private double longitude;
+    private double accuracy;
+    private String phoneType;
+    private long time;
     private int signal;
 
     public SignalMetadata() {
 
     }
 
-    public SignalMetadata(double latitude, double longitude, int signal) {
+    public SignalMetadata(String clientId, String carrier, double latitude, double longitude,
+            double accuracy, String phoneType, long time, int signal) {
         super();
+        this.clientId = clientId;
+        this.carrier = carrier;
         this.latitude = latitude;
         this.longitude = longitude;
+        this.accuracy = accuracy;
+        this.phoneType = phoneType;
+        this.time = time;
         this.signal = signal;
+    }
+
+    public String getClientId() {
+        return clientId;
+    }
+
+    public void setClientId(String clientId) {
+        this.clientId = clientId;
+    }
+
+    public String getCarrier() {
+        return carrier;
+    }
+
+    public void setCarrier(String carrier) {
+        this.carrier = carrier;
     }
 
     public double getLatitude() {
@@ -35,6 +62,30 @@ public class SignalMetadata implements IsSerializable {
         this.longitude = longitude;
     }
 
+    public double getAccuracy() {
+        return accuracy;
+    }
+
+    public void setAccuracy(double accuracy) {
+        this.accuracy = accuracy;
+    }
+
+    public String getPhoneType() {
+        return phoneType;
+    }
+
+    public void setPhoneType(String phoneType) {
+        this.phoneType = phoneType;
+    }
+
+    public long getTime() {
+        return time;
+    }
+
+    public void setTime(long time) {
+        this.time = time;
+    }
+
     public int getSignal() {
         return signal;
     }
@@ -43,8 +94,4 @@ public class SignalMetadata implements IsSerializable {
         this.signal = signal;
     }
 
-    public String toString(){
-      return ((Double)latitude).toString() + " " + ((Double)longitude).toString() +
-          " " + ((Integer)signal).toString();
-    }
 }

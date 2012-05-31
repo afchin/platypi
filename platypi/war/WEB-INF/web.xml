@@ -30,9 +30,29 @@
   
  	<servlet-mapping>
     	<servlet-name>PhoneSignalHttpServlet</servlet-name>
-   		<url-pattern>/signal/http</url-pattern>
+   		<url-pattern>/1.0/submit</url-pattern>
+  	</servlet-mapping>
+  	
+  	<servlet>
+    	<servlet-name>PhoneSignalHttpGetServlet</servlet-name>
+    	<servlet-class>cs3.platypi.server.PhoneSignalHttpGetServlet</servlet-class>
+  	</servlet>
+  
+ 	<servlet-mapping>
+    	<servlet-name>PhoneSignalHttpGetServlet</servlet-name>
+   		<url-pattern>/1.0/data</url-pattern>
   	</servlet-mapping>
   
+    <servlet>
+    	<servlet-name>PhoneSignalHttpGetAllServlet</servlet-name>
+    	<servlet-class>cs3.platypi.server.PhoneSignalHttpGetAllServlet</servlet-class>
+  	</servlet>
+  
+ 	<servlet-mapping>
+    	<servlet-name>PhoneSignalHttpGetAllServlet</servlet-name>
+   		<url-pattern>/1.0/alldata</url-pattern>
+  	</servlet-mapping>
+  	
 	<servlet>
 		<servlet-name>greetServlet</servlet-name>
     	<servlet-class>cs3.platypi.server.PhoneSignalServiceImpl</servlet-class>

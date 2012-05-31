@@ -33,8 +33,8 @@ public class PhoneSignal extends Composite implements ClickHandler, ChangeHandle
 
         // Example of using saveSignal and getSignalList
         List<SignalMetadata> signalList = new ArrayList<SignalMetadata>();
-        SignalMetadata s1 = new SignalMetadata(34.14, -118.13, 3);
-        SignalMetadata s2 = new SignalMetadata(4, 5, 6);
+        SignalMetadata s1 = new SignalMetadata("judy", "att", 34.14, -118.13, 15.5, "1", 123, 3);
+        SignalMetadata s2 = new SignalMetadata("judy", "att", 4.3, 5.1, 15.5, "1", 123, 3);
         signalList.add(s1);
         signalList.add(s2);
         // Do not call both save and get in the same run. 
