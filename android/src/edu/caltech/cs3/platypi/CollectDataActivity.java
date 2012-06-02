@@ -7,15 +7,13 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
 /**
- * UI through which the user can start/stop the data collection service.
- * User can also push a button to display current location/signal.
+ * UI for debugging the app. Allows user to view local database, send
+ * data, and input current signal/location.
  */
 public class CollectDataActivity extends Activity {
     private TextView mainText;
@@ -43,51 +41,24 @@ public class CollectDataActivity extends Activity {
         Intent intent = new Intent(this, SingleUpdateReceiver.class);
         app.alarmManager.set(AlarmManager.RTC_WAKEUP, 0,
                 PendingIntent.getBroadcast(app, 0, intent, 0));
+        // setting the alarm cancels the previous setting, so have to restart
+        if (app.isCollecting) { app.turnAlarmOn(interval_seconds); }
     }
 
     public void showLocalData(View v) {
+        SignalInfo signalInfo;
+        int i=0;
         mainText.setText(String.format("%s, %s%n",app.carrier,app.clientId));
         Cursor cursor = app.localSignalData.cursor();
         while (cursor.moveToNext()) {
-            mainText.append(String.format("%f,%f,%d,%n%d,%d,%d%n%n",
-                    cursor.getDouble(cursor.getColumnIndex(LocalSignalData.C_LATITTUDE)),
-                    cursor.getDouble(cursor.getColumnIndex(LocalSignalData.C_LONGITUDE)),
-                    cursor.getInt(cursor.getColumnIndex(LocalSignalData.C_ACCURACY)),
-                    cursor.getInt(cursor.getColumnIndex(LocalSignalData.C_PHONE_TYPE)),
-                    cursor.getLong(cursor.getColumnIndex(LocalSignalData.C_TIME)),
-                    cursor.getInt(cursor.getColumnIndex(LocalSignalData.C_SIGNAL))
-                    ));
+            signalInfo = new SignalInfo(cursor);
+            mainText.append(Integer.toString(i++) + " " + signalInfo.toString() + "\n\n");
         }
     }
 
     public void sendLocalData(View v) {
 //        app.sendLocalData();
         Toast.makeText(app, "This does nothing right now.", Toast.LENGTH_SHORT).show();
-    }
-
-    /** Expands menu.xml when the menu is called for the first time. */
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu, menu);
-        return super.onCreateOptionsMenu(menu);
-    }
-
-    /** Starts/stops the service when menu item is clicked. */
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch(item.getItemId()) {
-        case R.id.start_service:
-            app.turnAlarmOn(interval_seconds);
-            return true;
-        case R.id.stop_service:
-            app.turnAlarmOff();
-            return true;
-        case R.id.prefs:
-            startActivity(new Intent(this,Preferences.class));
-            return true;
-        default:
-            return false;
-        }
     }
 
     @Override

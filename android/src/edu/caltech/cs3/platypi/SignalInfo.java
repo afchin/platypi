@@ -6,6 +6,14 @@ import java.util.List;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 
+import android.database.Cursor;
+import android.graphics.Color;
+import android.graphics.drawable.ShapeDrawable;
+import android.graphics.drawable.shapes.OvalShape;
+
+import com.google.android.maps.GeoPoint;
+import com.google.android.maps.OverlayItem;
+
 /** Container class for signal data. */
 public class SignalInfo {
     private double latitude;
@@ -14,6 +22,32 @@ public class SignalInfo {
     private int phoneType;
     private long time_seconds;
     private int sigStrength_dBm;
+
+    public SignalInfo() { }
+
+    public SignalInfo(double la, double lo, int ac, int ph, long ti, int si) {
+        latitude = la;
+        longitude = lo;
+        accuracy = ac;
+        phoneType = ph;
+        time_seconds = ti;
+        sigStrength_dBm = si;
+    }
+
+    public SignalInfo(Cursor cursor) {
+        latitude = cursor.getDouble(cursor
+                .getColumnIndex(LocalSignalData.C_LATITTUDE));
+        longitude = cursor.getDouble(cursor
+                .getColumnIndex(LocalSignalData.C_LONGITUDE));
+        accuracy = cursor.getInt(cursor
+                .getColumnIndex(LocalSignalData.C_ACCURACY));
+        phoneType = cursor.getInt(cursor
+                .getColumnIndex(LocalSignalData.C_PHONE_TYPE));
+        time_seconds = cursor
+                .getLong(cursor.getColumnIndex(LocalSignalData.C_TIME));
+        sigStrength_dBm = cursor.getInt(cursor
+                .getColumnIndex(LocalSignalData.C_SIGNAL));
+    }
 
     public void setLatitude(double latitude) {
         this.latitude = latitude; }
@@ -34,7 +68,7 @@ public class SignalInfo {
     public int getPhoneType() { return phoneType; }
     public long getTime_seconds() { return time_seconds; }
     public int getSigStrength_dBm() { return sigStrength_dBm; }
-    
+
     /**
      * Returns list of name/value pairs with given integer suffix, as indicated in
      * SignalFinder API 1.0.
@@ -50,5 +84,43 @@ public class SignalInfo {
         nameValuePairs.add(new BasicNameValuePair("signal" + i, Integer.toString(sigStrength_dBm)));
 
         return nameValuePairs;
+    }
+
+    /**
+     * Produce the object which will be used to mark the datapoint on the map.
+     * For now, it's a partially transparent colored circle. The radius parameter is given
+     * because we will want to scale the marker based on the map zoom level.
+     */
+    public OverlayItem overlayItem(int radius_px) {
+        GeoPoint point = new GeoPoint((int) (latitude * 1e6),
+                (int) (longitude * 1e6));
+        OverlayItem result = new OverlayItem(point, String.format("%d Signal: %d, Accuracy: %dm",
+                phoneType, sigStrength_dBm, accuracy), Long.toString(time_seconds));
+
+        // signal ranges from -113 to -113 + 2*31
+        // rescale to range from 0 to 255
+        int intensity = (sigStrength_dBm + 113) * 4;
+        if (sigStrength_dBm == 0) { intensity = 0; }
+
+        // make the color go linearly from pure blue to pure red
+        // maybe tweak this to do something more clever in the future
+        int red = intensity;
+        int green = 0;
+        int blue = 255 - intensity;
+
+        ShapeDrawable marker = new ShapeDrawable(new OvalShape());
+        // TODO: replace intensity/2 by something appropriate which puts an upper
+        // bound on how opaque the marker will be. The user should be able to see
+        // the underlying map
+        marker.getPaint().setColor(Color.argb(intensity/2, red, green, blue));
+        marker.setBounds(0, 0, radius_px, radius_px);
+        result.setMarker(marker);
+
+        return result;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("%f,%f,%d,%d,%d", latitude, longitude, accuracy, time_seconds, sigStrength_dBm);
     }
 }

@@ -7,27 +7,32 @@
     <uses-sdk android:minSdkVersion="10" />
 
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:name=".SignalFinderApp"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name" >
+        <uses-library android:name="com.google.android.maps" />
+
         <activity
             android:name=".CollectDataActivity"
-            android:label="@string/app_name" >
+            android:theme="@android:style/Theme.NoTitleBar" >
+        </activity>
+        <activity
+            android:name=".SignalFinderActivity"
+            android:label="@string/app_name"
+            android:theme="@android:style/Theme.NoTitleBar" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        
         <activity android:name=".Preferences" >
         </activity>
-        
-        <receiver android:name=".SingleUpdateReceiver">
+
+        <receiver android:name=".SingleUpdateReceiver" >
             <intent-filter>
                 <action android:name="edu.caltech.cs3.platypi.GET_DATAPOINT" />
             </intent-filter>

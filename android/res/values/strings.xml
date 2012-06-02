@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">CollectDataActivity</string>
+    <string name="app_name">aaSignalFinder</string>
     <string name="reset">Reset</string>
     <string name="getdata">Get Data</string>
     <string name="original_text">Original text</string>
     <string name="start_service">Start Service</string>
     <string name="stop_service">Stop Service</string>
     <string name="prefs">prefs</string>
+    <string name="debugactivity">debug</string>
+    <string name="load_local_data">load local</string>
 </resources>

@@ -14,6 +14,10 @@ import android.telephony.TelephonyManager;
 import android.util.Log;
 
 /**
+ * - check to see if GPS is disabled; don't try to collect data if yes
+ */
+
+/**
  * Fetches one datapoint (i.e. one SignalInfo) and stores it in
  * the local signal database.
  */
@@ -24,11 +28,12 @@ public class SingleUpdateReceiver extends BroadcastReceiver {
     private LocalSignalData localSignalData;
     private SignalInfo signalInfo;
     private Context context;
-    private boolean gotLocation;
-    private boolean gotSignal;
+    private boolean gotLocation = false;
+    private boolean gotSignal = false;
 
     // check for location and signal every this many ms
     static final int WAIT_TIME_ms = 500;
+    static final int MAX_TRIES = 10;
 
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -42,6 +47,7 @@ public class SingleUpdateReceiver extends BroadcastReceiver {
         // and record when it does.
         new Thread() {
             public void run() {
+                int tries = 0;
                 while (!gotLocation || !gotSignal) {
                     // check back a bit later
                     try {
@@ -49,6 +55,8 @@ public class SingleUpdateReceiver extends BroadcastReceiver {
                     } catch (InterruptedException e) {
                         throw new RuntimeException(e);
                     }
+                    // give up?
+                    if (tries++ > MAX_TRIES) { return; }
                 }
                 localSignalData.insert(signalInfo);
             }

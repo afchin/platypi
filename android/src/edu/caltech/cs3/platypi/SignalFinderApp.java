@@ -57,11 +57,14 @@ public class SignalFinderApp extends Application {
 
         localSignalData = new LocalSignalData(this);
         alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
-
+        getCarrier();
+        getClientId();
+        
         Intent intent = new Intent(this, SingleUpdateReceiver.class);
         collectIntent = PendingIntent.getBroadcast(this, 0, intent, 0);
-
-        // determine carrier
+    }
+    
+    private void getCarrier() {
         TelephonyManager telManager = (TelephonyManager) getSystemService(TELEPHONY_SERVICE);
         carrier = telManager.getNetworkOperatorName();
         if (carrier == "") { carrier = telManager.getSimOperatorName(); }
@@ -70,8 +73,9 @@ public class SignalFinderApp extends Application {
         if (!carriers.contains(carrier)) {
             throw new RuntimeException("Carrier " + carrier + " not supported.");
         }
+    }
 
-        // determine (or generate) clientId
+    private void getClientId() {
         SharedPreferences sharedPrefs = getSharedPreferences(PREF_FILE, Context.MODE_PRIVATE);
         clientId = sharedPrefs.getString("PREF_CLIENT_ID", null);
         if (clientId == null) {
@@ -81,7 +85,7 @@ public class SignalFinderApp extends Application {
                 editor.commit();
         }
     }
-
+    
     public void turnAlarmOn(int delay_seconds) {
         if (isCollecting) { return; }
         Log.d("Platypi","turning alarm on");
@@ -114,22 +118,9 @@ public class SignalFinderApp extends Application {
                     // add everything in the local database
                     int numData = 0;
                     while (cursor.moveToNext()) {
-                        SignalInfo sigInfo = new SignalInfo();
-                        sigInfo.setLatitude(cursor.getDouble(cursor
-                                .getColumnIndex(LocalSignalData.C_LATITTUDE)));
-                        sigInfo.setLongitude(cursor.getDouble(cursor
-                                .getColumnIndex(LocalSignalData.C_LONGITUDE)));
-                        sigInfo.setAccuracy(cursor.getInt(cursor
-                                .getColumnIndex(LocalSignalData.C_ACCURACY)));
-                        sigInfo.setPhoneType(cursor.getInt(cursor
-                                .getColumnIndex(LocalSignalData.C_PHONE_TYPE)));
-                        sigInfo.setTime_seconds(cursor.getLong(cursor
-                                .getColumnIndex(LocalSignalData.C_TIME)));
-                        sigInfo.setSigStrength_dBm(cursor.getInt(cursor
-                                .getColumnIndex(LocalSignalData.C_SIGNAL)));
-
-                        numData++;
+                        SignalInfo sigInfo = new SignalInfo(cursor);
                         nameValuePairs.addAll(sigInfo.nameValuePairs(numData));
+                        numData++;
                     }
                     nameValuePairs.add(new BasicNameValuePair("numData",
                             Integer.toString(numData)));
