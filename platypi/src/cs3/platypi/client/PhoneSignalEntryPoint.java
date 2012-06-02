@@ -38,6 +38,7 @@ import com.google.gwt.user.client.ui.RichTextArea;
 import com.google.gwt.user.client.ui.RootLayoutPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.maps.client.overlay.Polyline;
 
 import cs3.platypi.shared.SignalMetadata;
 
@@ -45,12 +46,6 @@ public class PhoneSignalEntryPoint implements EntryPoint, ValueChangeHandler<Str
   final LatLng CALTECH = LatLng.newInstance(34.139, -118.124);
   final LatLng CALTECH2 = LatLng.newInstance(34.15, -118.124);
   final LatLng CALTECH1 = LatLng.newInstance(34.139, -118.129);
-
-  final String WHITE = "http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%E2%80%A2|FFFFFF";
-  final String YELLOW = "http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%E2%80%A2|E8F00C";
-  final String GREEN = "http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%E2%80%A2|0CF05F";
-  final String RED = "http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%E2%80%A2|F00C6B";
-  final String ORANGE = "http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%E2%80%A2|E0A21B";
 
   final RichTextArea latitude = new RichTextArea();
   final RichTextArea longitude = new RichTextArea();
@@ -183,28 +178,34 @@ public class PhoneSignalEntryPoint implements EntryPoint, ValueChangeHandler<Str
   private void addPoints(){
     List<SignalMetadata> list = collecter.returnMetadata();
     System.out.println(list.size());
+    
     for (SignalMetadata pt: list){
       System.out.println(pt.getLatitude() + pt.getLongitude());
       LatLng newpt = LatLng.newInstance(pt.getLatitude(), pt.getLongitude());
+      LatLng newpt2 = LatLng.newInstance(pt.getLatitude(), pt.getLongitude() + 0.00001);
       String color;
       int strength = pt.getSignal();
-      if (strength < 10){
-        color = RED;
-      } else if (strength < 20) {
-        color = ORANGE;
-      } else if (strength < 30) {
-        color = YELLOW;
-      } else if (strength <= 31) {
-        color = GREEN;
-      } else {
-        color = WHITE;
+      
+      LatLng[] newptArray = new LatLng[2];
+      newptArray[0] = newpt;
+      newptArray[1] = newpt2;
+      
+      String redHex = "00";
+      int redValue = 255 - 4*(strength + 113);
+      if (redValue != 0){
+        redHex = Integer.toHexString((Integer) redValue );    
       }
-      Icon icon = Icon.newInstance(color);
-      icon.setIconSize(Size.newInstance(20, 34));
-      MarkerOptions ops = MarkerOptions.newInstance(icon);
-      ops.setTitle(((Integer)strength).toString());
-      Marker marker = new Marker(newpt, ops);
+      
+      int greenValue = 4*(strength + 113);
+      String greenHex = "00";
+      if (greenValue != 0){
+        greenHex = Integer.toHexString((Integer) greenValue);
+      }
+      
+      String hexValue = "#" + redHex + greenHex + "00";
+      Polyline marker = new Polyline(newptArray, hexValue,10, 0.3);
       map.addOverlay(marker);
+
     }
   }
   
@@ -215,43 +216,10 @@ public class PhoneSignalEntryPoint implements EntryPoint, ValueChangeHandler<Str
     map.addControl(new LargeMapControl());
     map.setZoomLevel(17);
 
-    // Add a marker
-//    map.addOverlay(new Marker(CALTECH));
-
-    // Add an info window to highlight a point of interest
-    //      map.getInfoWindow().open(map.getCenter(),
-    //          new InfoWindowContent("World's Largest Ball of Sisal Twine"));
-
-//    HashMap<LatLng, String> pts = new HashMap<LatLng, String>();
-//    pts.put(CALTECH, GREEN);
-//    pts.put(CALTECH1, WHITE);
-//    pts.put(CALTECH2, RED);
-//
-//    Set<LatLng> markers = pts.keySet();
-//    for (LatLng pt: markers){
-//      Icon icon = Icon.newInstance((String) pts.get(pt));
-//      icon.setIconSize(Size.newInstance(20, 34));
-//      MarkerOptions ops = MarkerOptions.newInstance(icon);
-//      Marker marker = new Marker(pt, ops);
-//      map.addOverlay(marker);
-//    }
-
     LayoutPanel dock = new LayoutPanel();
     dock.add(map);
-    //    vp.add(map);
+
     RootLayoutPanel.get().add(dock);
-    //    vp.add(dock);
-
-    //          final DockLayoutPanel dock = new DockLayoutPanel(Unit.PX);
-    //          dock.addSouth(collecter, 500);      
-    //          dock.add(map);
-
-
-    // Add the map to the HTML host page
-    //    vp.add(dock);
-    //    RootPanel.get("application").add(map);
-    //    map.checkResizeAndCenter();
-
 
   }
 
