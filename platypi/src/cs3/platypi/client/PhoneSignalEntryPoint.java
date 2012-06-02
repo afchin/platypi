@@ -160,7 +160,6 @@ public class PhoneSignalEntryPoint implements EntryPoint, ValueChangeHandler<Str
 
   private void runApp(){
     buildUi();
-    addPoints();
     List<String> carrierParams = new ArrayList<String>();
     for (int i = 0; i < carriers.getItemCount(); i ++){
        if (carriers.isItemSelected(i)){
@@ -173,10 +172,11 @@ public class PhoneSignalEntryPoint implements EntryPoint, ValueChangeHandler<Str
         carrierParams.add(c);
       }
     }
+    addPoints(carrierParams);
   }
   
-  private void addPoints(){
-    List<SignalMetadata> list = collecter.returnMetadata();
+  private void addPoints(List<String> carrierParams){
+    List<SignalMetadata> list = collecter.returnMetadata(carrierParams);
     System.out.println(list.size());
     
     for (SignalMetadata pt: list){

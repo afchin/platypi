@@ -21,6 +21,12 @@ public interface PhoneSignalService extends RemoteService {
     List<SignalMetadata> getSignalList();
 
     /**
+     * Used to get a list of current signal information.
+     * 
+     * @return a list of the metadata of the currently available signal info
+     */
+    List<SignalMetadata> getSignalList(List<String> carrierParams);
+    /**
      * Used to save a signal.
      * 
      * @param signalInfo

@@ -50,27 +50,6 @@ public class PhoneSignal extends Composite implements ClickHandler, ChangeHandle
         
         
         System.out.println(signalMetadataList.size());
-//        for (String s: this.mainSignalList){
-//            outerVp.add(new HTML(s));
-//          outerVp.add(new HTML(((Double) s.getLatitude()).toString() + 
-//              ((Double) s.getLongitude()).toString() +
-//              ((Integer) s.getSignal()).toString()));
-//        }
-//        Grid demotable = new Grid(4,4);
-//        demotable.setText(0, 0, "ID");
-//        demotable.setText(0, 1, "Latitude");
-//        demotable.setText(0, 2, "Longitude");
-//        demotable.setText(0, 3, "Signal");
-//        
-//        demotable.setText(1, 0, "adsflkg3g42");
-//        demotable.setText(1, 1, "56");
-//        demotable.setText(1, 2, "45");
-//        demotable.setText(1, 3, "99");
-//        
-//        demotable.setText(2, 0, "234098t342");
-//        demotable.setText(2, 1, "24");
-//        demotable.setText(2, 2, "34");
-//        demotable.setText(2, 3, "31");
 
         initWidget(outerVp);
     }
@@ -88,6 +67,11 @@ public class PhoneSignal extends Composite implements ClickHandler, ChangeHandle
     public List<SignalMetadata> returnMetadata(){
       return signalMetadataList;
     }
+    
+    public List<SignalMetadata> returnMetadata(List<String> carrierParams){
+      return signalMetadataList;
+    }
+    
     @Override
     public void onClick(ClickEvent event) {
         // TODO Auto-generated method stub

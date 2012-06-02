@@ -20,6 +20,15 @@ public interface PhoneSignalServiceAsync {
     void getSignalList(AsyncCallback<List<SignalMetadata>> callback);
 
     /**
+     * Used to get a list of current signal information.
+     * 
+     * @param callback
+     *            the callback to return a list of the metadata of the currently
+     *            available signal info
+     */
+    void getSignalList(List<String> carrierParams, AsyncCallback<List<SignalMetadata>> callback);
+    
+    /**
      * Used to save a signal.
      * 
      * @param signalInfo

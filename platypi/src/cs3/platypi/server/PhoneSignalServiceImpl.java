@@ -39,6 +39,22 @@ public class PhoneSignalServiceImpl extends RemoteServiceServlet implements Phon
     }
 
     @Override
+    public List<SignalMetadata> getSignalList(List<String> carrierParams) {
+        PersistenceManager manager = PMF.getManager();
+        try {
+            ArrayList<SignalMetadata> signalInfo = new ArrayList<SignalMetadata>();
+            Extent<SignalInfo> allSignalInfo = manager.getExtent(SignalInfo.class);
+
+            for (SignalInfo s : allSignalInfo) {
+                signalInfo.add(s.getSignalMetadata());
+            }
+
+            return signalInfo;
+        } finally {
+            manager.close();
+        }
+    }
+    @Override
     public void saveSignalInfo(List<SignalMetadata> signalInfo) {
         PersistenceManager manager = PMF.getManager();
         try {

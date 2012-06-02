@@ -20,6 +20,11 @@ public class SignalLister implements AsyncCallback<List<SignalMetadata>> {
     this.signalCollacter = signalCollacter;
   }
 
+  public void getSignalList(List<String> carrierParams) {
+    System.out.println("Fetching signal list");
+    signalCollacter.signalService.getSignalList(carrierParams, this);
+  }
+  
   public void getSignalList() {
     System.out.println("Fetching signal list");
     signalCollacter.signalService.getSignalList(this);
