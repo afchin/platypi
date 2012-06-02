@@ -96,8 +96,9 @@ public class SignalInfo {
         int OPACITY = 64;
         GeoPoint point = new GeoPoint((int) (latitude * 1e6),
                 (int) (longitude * 1e6));
-        OverlayItem result = new OverlayItem(point, String.format("%d Signal: %d, Accuracy: %dm",
-                phoneType, sigStrength_dBm, accuracy), Long.toString(time_seconds));
+        OverlayItem result = new OverlayItem(point, "", "");
+                //String.format("%d Signal: %d, Accuracy: %dm",
+                // phoneType, sigStrength_dBm, accuracy), Long.toString(time_seconds));
 
         // signal ranges from -113 to -113 + 2*31
         // rescale to range from 0 to 255

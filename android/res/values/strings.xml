@@ -8,5 +8,6 @@
     <string name="stop_service">Stop Service</string>
     <string name="prefs">prefs</string>
     <string name="debugactivity">debug</string>
+    <string name="load_data">load</string>
     <string name="load_local_data">load local</string>
 </resources>

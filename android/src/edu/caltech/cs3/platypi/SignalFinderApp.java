@@ -187,7 +187,7 @@ public class SignalFinderApp extends Application {
                     for (int i=0; i<jsonArray.length(); i++) {
                         JSONObject row = jsonArray.getJSONObject(i); 
                         signalData.insert(row.getDouble("latitude"), 
-                                row.getDouble("latitude"), 
+                                row.getDouble("longitude"), 
                                 row.getInt("signal"));
                     }
                 } catch (URISyntaxException e) {

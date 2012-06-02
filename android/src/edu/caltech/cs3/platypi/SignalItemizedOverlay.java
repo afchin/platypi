@@ -6,6 +6,8 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.ShapeDrawable;
+import android.graphics.drawable.shapes.OvalShape;
 
 import com.google.android.maps.ItemizedOverlay;
 import com.google.android.maps.MapView;
@@ -25,6 +27,11 @@ public class SignalItemizedOverlay extends ItemizedOverlay<OverlayItem> {
 
     public SignalItemizedOverlay(final Drawable defaultMarker, final Context context) {
         super(defaultMarker);
+        mContext = context;
+    }
+
+    public SignalItemizedOverlay(final Context context) {
+        super(new ShapeDrawable(new OvalShape()));
         mContext = context;
     }
 
