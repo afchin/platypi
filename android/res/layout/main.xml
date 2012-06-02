@@ -4,41 +4,64 @@
     android:layout_height="fill_parent"
     android:orientation="vertical" >
 
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:onClick="sendLocalData"
-        android:text="Send local data" />
+    <TableLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/tableLayout1"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content" >
 
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:onClick="clearDb"
-        android:text="Clear local database" />
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" >
 
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:onClick="showLocalData"
-        android:text="Show local database" />
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:onClick="sendLocalData"
+                android:text="Send local" />
 
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:onClick="showData"
-        android:text="Show database" />
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:onClick="clearDb"
+                android:text="Clear local" />
+        </TableRow>
 
-        <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:onClick="fetchData"
-        android:text="fetch data" />
-    
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:onClick="insertCurrentData"
-        android:text="Insert Current Data" />
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" >
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:onClick="showLocalData"
+                android:text="Show local" />
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:onClick="showData"
+                android:text="Show database" />
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" >
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:onClick="insertCurrentData"
+                android:text="Insert to local" />
+            
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:onClick="fetchData"
+                android:text="fetch data" />
+
+        </TableRow>
+    </TableLayout>
 
     <ScrollView
         android:layout_width="wrap_content"

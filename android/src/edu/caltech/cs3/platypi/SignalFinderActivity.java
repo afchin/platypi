@@ -4,7 +4,6 @@ import java.util.List;
 
 import android.content.Intent;
 import android.database.Cursor;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -22,12 +21,8 @@ import com.google.android.maps.Overlay;
 public class SignalFinderActivity extends MapActivity {
 
     private SignalFinderApp app;
-    //TODO: pull this number from preferences instead
-    private int interval_seconds = 30;
     private List<Overlay> mapOverlays;
     private SignalItemizedOverlay itemizedOverlay;
-    // TODO: pull from preferences
-    private String apiroot = "http://2.proudplatypi.appspot.com";
 
     @Override
     protected boolean isRouteDisplayed() { return false; }
@@ -42,7 +37,6 @@ public class SignalFinderActivity extends MapActivity {
         mapView.setBuiltInZoomControls(true);
 
         mapOverlays = mapView.getOverlays();
-        Drawable drawable = this.getResources().getDrawable(R.drawable.ic_launcher);
         itemizedOverlay = new SignalItemizedOverlay(this);
         loadLocalData();
     }
@@ -100,12 +94,6 @@ public class SignalFinderActivity extends MapActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch(item.getItemId()) {
-        case R.id.start_service:
-            app.turnAlarmOn(interval_seconds);
-            return true;
-        case R.id.stop_service:
-            app.turnAlarmOff();
-            return true;
         case R.id.prefs:
             startActivity(new Intent(this,Preferences.class));
             return true;
@@ -113,8 +101,9 @@ public class SignalFinderActivity extends MapActivity {
             startActivity(new Intent(this,CollectDataActivity.class));
             return true;
         case R.id.load_data:
-            //app.fetchSignalData(apiroot, 0, 0, 0, 0, "");
+            //app.fetchSignalData(0, 0, 0, 0);
             // TODO: give above line time to finish in separate thread
+            // also fetch data based on displayed bounding box
             loadData();
             return true;
         case R.id.load_local_data:

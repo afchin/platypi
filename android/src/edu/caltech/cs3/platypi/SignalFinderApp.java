@@ -54,7 +54,6 @@ public class SignalFinderApp extends Application {
     String clientId;
     private static final String PREF_FILE = "PREFERENCES";
     AlarmManager alarmManager;
-    boolean isCollecting;
     PendingIntent collectIntent;
 
     /**
@@ -97,26 +96,46 @@ public class SignalFinderApp extends Application {
         }
     }
     
-    public void turnAlarmOn(int delay_seconds) {
-        if (isCollecting) { return; }
+    private String getAPIroot() {
+        SharedPreferences sharedPrefs = getSharedPreferences(PREF_FILE, Context.MODE_PRIVATE);
+        return sharedPrefs.getString("PREF_APIROOT", "http://2.proudplatypi.appspot.com");
+        // TODO: if use leaves a trailing slash, fix it
+    }
+
+    private String getDisplayCarrier() {
+        SharedPreferences sharedPrefs = getSharedPreferences(PREF_FILE, Context.MODE_PRIVATE);
+        return sharedPrefs.getString("PREF_DISPLAY_CARRIER", "All carriers");
+        // TODO: if use leaves a trailing slash, fix it
+    }
+    
+    private int getCollectionFreq() {
+        SharedPreferences sharedPrefs = getSharedPreferences(PREF_FILE, Context.MODE_PRIVATE);
+        return sharedPrefs.getInt("PREF_COLLECTION_FREQ", 30);
+    }
+
+    public boolean isCollecting() {
+        SharedPreferences sharedPrefs = getSharedPreferences(PREF_FILE, Context.MODE_PRIVATE);
+        return sharedPrefs.getBoolean("PREF_COLLECT_DATA", true);        
+    }
+
+    public void turnAlarmOn() {
         Log.d("Platypi","turning alarm on");
-        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, -1, delay_seconds * 1000, collectIntent);
-        isCollecting = true;
+        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, -1, getCollectionFreq() * 1000, collectIntent);
     }
 
     public void turnAlarmOff() {
         Log.d("Platypi","turning alarm off");
         alarmManager.cancel(collectIntent);
-        isCollecting = false;
     }
-
+    
     /**
      * Sends the contents of the local signal table of the database. If
      * successful, the contents of the table are deleted.
      */
-    public void sendLocalData(final String apiroot) {
+    public void sendLocalData() {
         // Run in new thread to avoid locking up UI with slow internet
         // connection.
+        final String apiroot = getAPIroot();
         new Thread() {
             public void run() {
                 Cursor cursor = localSignalData.cursor();
@@ -155,10 +174,12 @@ public class SignalFinderApp extends Application {
         } .start();
     }
 
-    public void fetchSignalData(final String apiroot, final double minLat, final double minLon, final double maxLat,
-            final double maxLon, final String carrier) {
+    public void fetchSignalData(final double minLat, final double minLon, final double maxLat,
+            final double maxLon) {
         // Run in new thread to avoid locking up UI with slow internet
         // connection.
+        final String apiroot = getAPIroot();
+        final String carrier = getDisplayCarrier();
         new Thread() {
             public void run() {
                 String url = String

@@ -18,10 +18,6 @@ public class CollectDataActivity extends Activity {
     private TextView mainText;
     private final String TAG = "CollectDataActivity";
     private SignalFinderApp app;
-    //TODO: pull this number from preferences instead
-    private int interval_seconds = 30;
-    // TODO: pull from preferences
-    private String apiroot = "http://2.proudplatypi.appspot.com";
 
     /** Expands main.xml when activity is created, and points mainText to the text field. */
     @Override
@@ -43,7 +39,7 @@ public class CollectDataActivity extends Activity {
         app.alarmManager.set(AlarmManager.RTC_WAKEUP, 0,
                 PendingIntent.getBroadcast(app, 0, intent, 0));
         // setting the alarm cancels the previous setting, so have to restart
-        if (app.isCollecting) { app.turnAlarmOn(interval_seconds); }
+        if (app.isCollecting()) { app.turnAlarmOn(); }
     }
 
     public void showLocalData(View v) {
@@ -58,7 +54,7 @@ public class CollectDataActivity extends Activity {
     }
     
     public void fetchData(View v) {
-        app.fetchSignalData(apiroot, 0, 0, 0, 0, "");
+        app.fetchSignalData(0, 0, 0, 0);
     }
 
     public void showData(View v) {
@@ -76,8 +72,7 @@ public class CollectDataActivity extends Activity {
     }
 
     public void sendLocalData(View v) {
-        app.sendLocalData(apiroot);
-//        Toast.makeText(app, "This does nothing right now.", Toast.LENGTH_SHORT).show();
+        app.sendLocalData();
     }
 
     @Override

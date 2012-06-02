@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
 
+    <CheckBoxPreference
+        android:key="PREF_COLLECT_DATA"
+        android:title="Collect Data?" />
+
     <ListPreference
         android:defaultValue="20"
         android:dialogTitle="Collection frequency"
@@ -16,7 +20,7 @@
         android:title="API root" />
 
     <ListPreference
-        android:defaultValue="My carrier"
+        android:defaultValue="All carriers"
         android:dialogTitle="Display carriers"
         android:entries="@array/display_carriers"
         android:entryValues="@array/display_carriers"
