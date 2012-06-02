@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -25,6 +26,8 @@ public class SignalFinderActivity extends MapActivity {
     private int interval_seconds = 30;
     private List<Overlay> mapOverlays;
     private SignalItemizedOverlay itemizedOverlay;
+    // TODO: pull from preferences
+    private String apiroot = "http://2.proudplatypi.appspot.com";
 
     @Override
     protected boolean isRouteDisplayed() { return false; }
@@ -40,11 +43,12 @@ public class SignalFinderActivity extends MapActivity {
 
         mapOverlays = mapView.getOverlays();
         Drawable drawable = this.getResources().getDrawable(R.drawable.ic_launcher);
-        itemizedOverlay = new SignalItemizedOverlay(drawable, this);
+        itemizedOverlay = new SignalItemizedOverlay(this);
         loadLocalData();
     }
 
     public void loadLocalData() {
+        itemizedOverlay = new SignalItemizedOverlay(this);
         new Thread() {
             public void run() {
                 mapOverlays.clear();
@@ -53,6 +57,28 @@ public class SignalFinderActivity extends MapActivity {
                     SignalInfo signalInfo = new SignalInfo(cursor);
                     itemizedOverlay.addOverlay(signalInfo.overlayItem(30));
                 }
+                itemizedOverlay.populateOverlay();
+                mapOverlays.add(itemizedOverlay);
+            }
+        } .start();
+    }
+
+    public void loadData() {
+        itemizedOverlay = new SignalItemizedOverlay(this);
+        new Thread() {
+            public void run() {
+                mapOverlays.clear();
+                Cursor cursor = app.signalData.cursor();
+                while (cursor.moveToNext()) {
+                    SignalInfo signalInfo = new SignalInfo();
+                    signalInfo.setLatitude(cursor.getDouble(cursor.getColumnIndex(SignalData.C_LATITTUDE)));
+                    signalInfo.setLongitude(cursor.getDouble(cursor.getColumnIndex(SignalData.C_LONGITUDE)));
+                    signalInfo.setSigStrength_dBm(cursor.getInt(cursor.getColumnIndex(SignalData.C_SIGNAL)));
+                    Log.d("foo", signalInfo.toString());
+
+                    itemizedOverlay.addOverlay(signalInfo.overlayItem(30));
+                }
+                Log.d("foo","got this far");
                 itemizedOverlay.populateOverlay();
                 mapOverlays.add(itemizedOverlay);
             }
@@ -85,6 +111,11 @@ public class SignalFinderActivity extends MapActivity {
             return true;
         case R.id.debugactivity:
             startActivity(new Intent(this,CollectDataActivity.class));
+            return true;
+        case R.id.load_data:
+            //app.fetchSignalData(apiroot, 0, 0, 0, 0, "");
+            // TODO: give above line time to finish in separate thread
+            loadData();
             return true;
         case R.id.load_local_data:
             loadLocalData();

@@ -9,7 +9,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 
 /**
  * UI for debugging the app. Allows user to view local database, send
@@ -21,6 +20,8 @@ public class CollectDataActivity extends Activity {
     private SignalFinderApp app;
     //TODO: pull this number from preferences instead
     private int interval_seconds = 30;
+    // TODO: pull from preferences
+    private String apiroot = "http://2.proudplatypi.appspot.com";
 
     /** Expands main.xml when activity is created, and points mainText to the text field. */
     @Override
@@ -55,10 +56,28 @@ public class CollectDataActivity extends Activity {
             mainText.append(Integer.toString(i++) + " " + signalInfo.toString() + "\n\n");
         }
     }
+    
+    public void fetchData(View v) {
+        app.fetchSignalData(apiroot, 0, 0, 0, 0, "");
+    }
+
+    public void showData(View v) {
+        SignalInfo signalInfo;
+        int i=0;
+        mainText.setText("");
+        Cursor cursor = app.signalData.cursor();
+        while (cursor.moveToNext()) {
+            signalInfo = new SignalInfo();
+            signalInfo.setLatitude(cursor.getDouble(cursor.getColumnIndex(SignalData.C_LATITTUDE)));
+            signalInfo.setLongitude(cursor.getDouble(cursor.getColumnIndex(SignalData.C_LONGITUDE)));
+            signalInfo.setSigStrength_dBm(cursor.getInt(cursor.getColumnIndex(SignalData.C_SIGNAL)));
+            mainText.append(Integer.toString(i++) + " " + signalInfo.toString() + "\n\n");
+        }
+    }
 
     public void sendLocalData(View v) {
-//        app.sendLocalData();
-        Toast.makeText(app, "This does nothing right now.", Toast.LENGTH_SHORT).show();
+        app.sendLocalData(apiroot);
+//        Toast.makeText(app, "This does nothing right now.", Toast.LENGTH_SHORT).show();
     }
 
     @Override

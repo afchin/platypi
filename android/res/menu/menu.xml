@@ -18,6 +18,10 @@
         android:title="@string/debugactivity">
     </item>
     <item
+        android:id="@+id/load_data"
+        android:title="@string/load_data">
+    </item>
+    <item
         android:id="@+id/load_local_data"
         android:title="@string/load_local_data">
     </item>

@@ -35,6 +35,7 @@ public class SignalInfo {
     }
 
     public SignalInfo(Cursor cursor) {
+        // TODO: this only works for LocalSignalData cursor, not for SignalData cursor
         latitude = cursor.getDouble(cursor
                 .getColumnIndex(LocalSignalData.C_LATITTUDE));
         longitude = cursor.getDouble(cursor
@@ -43,8 +44,8 @@ public class SignalInfo {
                 .getColumnIndex(LocalSignalData.C_ACCURACY));
         phoneType = cursor.getInt(cursor
                 .getColumnIndex(LocalSignalData.C_PHONE_TYPE));
-        time_seconds = cursor
-                .getLong(cursor.getColumnIndex(LocalSignalData.C_TIME));
+        time_seconds = cursor.getLong(cursor
+                .getColumnIndex(LocalSignalData.C_TIME));
         sigStrength_dBm = cursor.getInt(cursor
                 .getColumnIndex(LocalSignalData.C_SIGNAL));
     }
@@ -92,10 +93,12 @@ public class SignalInfo {
      * because we will want to scale the marker based on the map zoom level.
      */
     public OverlayItem overlayItem(int radius_px) {
+        int OPACITY = 64;
         GeoPoint point = new GeoPoint((int) (latitude * 1e6),
                 (int) (longitude * 1e6));
-        OverlayItem result = new OverlayItem(point, String.format("%d Signal: %d, Accuracy: %dm",
-                phoneType, sigStrength_dBm, accuracy), Long.toString(time_seconds));
+        OverlayItem result = new OverlayItem(point, "", "");
+                //String.format("%d Signal: %d, Accuracy: %dm",
+                // phoneType, sigStrength_dBm, accuracy), Long.toString(time_seconds));
 
         // signal ranges from -113 to -113 + 2*31
         // rescale to range from 0 to 255
@@ -104,15 +107,15 @@ public class SignalInfo {
 
         // make the color go linearly from pure blue to pure red
         // maybe tweak this to do something more clever in the future
-        int red = intensity;
-        int green = 0;
-        int blue = 255 - intensity;
+        int red = 255 - intensity;
+        int green = intensity;
+        int blue = 0;
 
         ShapeDrawable marker = new ShapeDrawable(new OvalShape());
         // TODO: replace intensity/2 by something appropriate which puts an upper
         // bound on how opaque the marker will be. The user should be able to see
         // the underlying map
-        marker.getPaint().setColor(Color.argb(intensity/2, red, green, blue));
+        marker.getPaint().setColor(Color.argb(OPACITY, red, green, blue));
         marker.setBounds(0, 0, radius_px, radius_px);
         result.setMarker(marker);
 
