@@ -29,6 +29,12 @@
     </fileset>
   </path>
 
+  <path id="platypi.lib">
+    <fileset dir="platypi/lib">
+      <include name="*.jar" />
+    </fileset>
+  </path>
+
   <path id="appengine.testlib">
     <fileset dir="${appengine}">
       <include name="lib/testing/appengine-testing.jar"/>
@@ -97,6 +103,7 @@
       <classpath>
         <path refid="appengine.lib"/>
         <path refid="json"/>
+        <path refid="platypi.lib"/>
       </classpath>
     </javac>
 
@@ -107,6 +114,7 @@
     <!-- process JDO class files -->
     <!-- Each JDO persistence class must be enhanced -->
     <!-- to add the machinery to write/read it from the data store -->
+<!--
     <macrodef name="enhance-jdo-class">
       <attribute name="classfile"/>
       <sequential>
@@ -122,7 +130,7 @@
     <enhance-jdo-class classfile="edu/caltech/cs3/cms/model/Student.class"/>
     <enhance-jdo-class classfile="edu/caltech/cs3/cms/model/Team.class"/>
     <enhance-jdo-class classfile="edu/caltech/cs3/cms/model/Build.class"/>
-
+-->
   </target>
 
   <path id="test.classpath">
