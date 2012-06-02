@@ -182,7 +182,7 @@ public class PhoneSignalEntryPoint implements EntryPoint, ValueChangeHandler<Str
     for (SignalMetadata pt: list){
       System.out.println(pt.getLatitude() + pt.getLongitude());
       LatLng newpt = LatLng.newInstance(pt.getLatitude(), pt.getLongitude());
-      LatLng newpt2 = LatLng.newInstance(pt.getLatitude(), pt.getLongitude() + 0.00001);
+      LatLng newpt2 = LatLng.newInstance(pt.getLatitude(), pt.getLongitude() + 0.000005);
       String color;
       int strength = pt.getSignal();
       
