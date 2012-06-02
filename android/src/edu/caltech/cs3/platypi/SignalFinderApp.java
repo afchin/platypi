@@ -1,21 +1,30 @@
 package edu.caltech.cs3.platypi;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
+import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import android.app.AlarmManager;
 import android.app.Application;
@@ -38,6 +47,7 @@ import android.util.Log;
 public class SignalFinderApp extends Application {
     // TODO: make these private. For now they're available for CollectDataActivity to debug.
     LocalSignalData localSignalData;
+    SignalData signalData;
     String carrier;
     private static List<String> carriers = Arrays.asList(new String[] { "att",
             "verizon", "tmobile", "sprint" });
@@ -56,6 +66,7 @@ public class SignalFinderApp extends Application {
         super.onCreate();
 
         localSignalData = new LocalSignalData(this);
+        signalData = new SignalData(this);
         alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
         getCarrier();
         getClientId();
@@ -144,6 +155,54 @@ public class SignalFinderApp extends Application {
         } .start();
     }
 
+    public void fetchSignalData(final String apiroot, final double minLat, final double minLon, final double maxLat,
+            final double maxLon, final String carrier) {
+        // Run in new thread to avoid locking up UI with slow internet
+        // connection.
+        new Thread() {
+            public void run() {
+                String url = String
+                        .format("%s/1.0/data?minLatitude=%f&minLongitude=%f&maxLatitude=%f&maxLongitude=%f",
+                                apiroot, minLat, minLon, maxLat, maxLon);
+                if (carriers.contains(carrier)) {
+                    url += "&carrier="+carrier;
+                }
+
+                try {
+                    HttpClient client = new DefaultHttpClient();
+                    HttpGet request = new HttpGet();
+                    request.setURI(new URI(url));
+                    HttpResponse response = client.execute(request);
+                    BufferedReader in = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
+                    
+                    String line = in.readLine();
+                    assert line=="SignalFinderAPI=1.0";
+                    line = in.readLine();
+                    assert line=="0";
+                    String jsonString = in.readLine();
+                    JSONArray jsonArray = new JSONArray(jsonString);
+                    // TODO: do something smarter than dropping all the data first
+                    signalData.dropData();
+                    // note: a JSONArray is not iterable for some reason. 
+                    for (int i=0; i<jsonArray.length(); i++) {
+                        JSONObject row = jsonArray.getJSONObject(i); 
+                        signalData.insert(row.getDouble("latitude"), 
+                                row.getDouble("latitude"), 
+                                row.getInt("signal"));
+                    }
+                } catch (URISyntaxException e) {
+                    throw new RuntimeException(e);
+                } catch (ClientProtocolException e) {
+                    throw new RuntimeException(e);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                } catch (JSONException e) {
+                    throw new RuntimeException(e);
+                } finally { }
+            }
+        } .start();
+    }
+    
     void appendToFile(String filename, String string) {
         try {
             // append to the existing file

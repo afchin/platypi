@@ -25,6 +25,18 @@
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:onClick="showData"
+        android:text="Show database" />
+
+        <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="fetchData"
+        android:text="fetch data" />
+    
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:onClick="insertCurrentData"
         android:text="Insert Current Data" />
 
