@@ -37,14 +37,12 @@ public class SignalInfoAvg {
     private int numSignals;
 
     public SignalInfoAvg(double longitude, double latitude, String carrier,
-            String phoneType, int signal) {
+            String phoneType) {
         super();
         this.carrier = carrier;
         this.latitude = latitude;
         this.longitude = longitude;
         this.phoneType = phoneType;
-        // Convert to double to maintain accuracy when computing running average
-        this.signal = (double) signal;
         // decay = 1/n meaning we care about last n data points in this box
         this.decay = .001;
         this.numSignals = 1;
@@ -107,8 +105,13 @@ public class SignalInfoAvg {
     }
 
     public void update(int signal) {
-        this.signal = ((1 - decay) * numSignals * this.signal
-                      + (1 + numSignals * decay) * signal) / (numSignals + 1);
+        // For averaging purposes
+        if (signal == 0) {
+            signal = -115;
+        }
+        
+        this.signal = ((1 - this.decay) * this.numSignals * this.signal
+                      + (1 + this.numSignals * this.decay) * signal) / (this.numSignals + 1);
         this.numSignals += 1;
     }
 
@@ -116,5 +119,15 @@ public class SignalInfoAvg {
         return new SignalMetadata(longitude, latitude, carrier, phoneType, (int) signal, numSignals);
     }
 
+    public boolean equals(Object obj) {
+        if (obj instanceof SignalInfoAvg) {
+            return longitude == ((SignalInfoAvg) obj).getLongitude() &&
+                   latitude == ((SignalInfoAvg) obj).getLatitude() &&
+                   carrier.equals(((SignalInfoAvg) obj).getCarrier()) &&
+                   phoneType.equals(((SignalInfoAvg) obj).getPhoneType());
+        } else {
+            return false;
+        }
+    }
 
 }

@@ -33,14 +33,14 @@ public class SignalMetadata implements IsSerializable {
 
     public SignalMetadata(double longitude, double latitude, String carrier,
              String phoneType, int signal, int numSignals) {
-		super();
-		this.longitude = longitude;
-		this.latitude = latitude;
-		this.carrier = carrier;
-		this.phoneType = phoneType;
-		this.signal = signal;
-		this.numSignals = numSignals;
-	}
+        super();
+        this.longitude = longitude;
+        this.latitude = latitude;
+        this.carrier = carrier;
+        this.phoneType = phoneType;
+        this.signal = signal;
+        this.numSignals = numSignals;
+    }
 
 	public String getClientId() {
         return clientId;
