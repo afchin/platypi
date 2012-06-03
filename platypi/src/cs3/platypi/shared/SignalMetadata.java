@@ -12,6 +12,7 @@ public class SignalMetadata implements IsSerializable {
     private String phoneType;
     private long time;
     private int signal;
+    private int numSignals;
 
     public SignalMetadata() {
 
@@ -30,7 +31,18 @@ public class SignalMetadata implements IsSerializable {
         this.signal = signal;
     }
 
-    public String getClientId() {
+    public SignalMetadata(double longitude, double latitude, String carrier,
+             String phoneType, int signal, int numSignals) {
+		super();
+		this.longitude = longitude;
+		this.latitude = latitude;
+		this.carrier = carrier;
+		this.phoneType = phoneType;
+		this.signal = signal;
+		this.numSignals = numSignals;
+	}
+
+	public String getClientId() {
         return clientId;
     }
 
@@ -92,6 +104,14 @@ public class SignalMetadata implements IsSerializable {
 
     public void setSignal(int signal) {
         this.signal = signal;
+    }
+
+    public int getNumSignals() {
+        return numSignals;
+    }
+
+    public void setNumSignal(int numSignals) {
+        this.numSignals = numSignals;
     }
 
 }
