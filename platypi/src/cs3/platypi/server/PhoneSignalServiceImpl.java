@@ -25,7 +25,7 @@ public class PhoneSignalServiceImpl extends RemoteServiceServlet implements Phon
     @Override
     public List<SignalMetadata> getSignalList() {
         PersistenceManager manager = PMF.getManager();
-        try {
+        try {           
             ArrayList<SignalMetadata> signalInfoAvg = new ArrayList<SignalMetadata>();
             Extent<SignalInfoAvg> allSignalInfoAvg = manager.getExtent(SignalInfoAvg.class);
 
@@ -80,6 +80,7 @@ public class PhoneSignalServiceImpl extends RemoteServiceServlet implements Phon
                     int index = signalsAvg.indexOf(signal);
 
                     if (index == -1) {
+                        signal.setSignal(s.getSignal());
                         signalsAvg.add(signal);
                     } else {
                         signalsAvg.get(index).update(s.getSignal());

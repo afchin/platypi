@@ -116,7 +116,7 @@ public class SignalInfoAvg {
     }
 
     public SignalMetadata getSignalMetadata() {
-        return new SignalMetadata(longitude, latitude, carrier, phoneType, (int) signal, numSignals);
+        return new SignalMetadata(longitude, latitude, carrier, phoneType, (int)signal, numSignals);
     }
 
     public boolean equals(Object obj) {
