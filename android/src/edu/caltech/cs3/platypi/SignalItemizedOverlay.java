@@ -19,7 +19,6 @@ import com.google.android.maps.OverlayItem;
 public class SignalItemizedOverlay extends ItemizedOverlay<OverlayItem> {
     private ArrayList<OverlayItem> mOverlays = new ArrayList<OverlayItem>();
     private Context mContext;
-    private static final float RADIUS_meters = 70;
 
     public SignalItemizedOverlay(final Drawable defaultMarker) {
         super(defaultMarker);
@@ -46,8 +45,9 @@ public class SignalItemizedOverlay extends ItemizedOverlay<OverlayItem> {
         for (OverlayItem overlayItem: mOverlays) {
             Drawable marker = overlayItem.getMarker(0);
             double latitude = overlayItem.getPoint().getLatitudeE6() / 1e6;
-            int radius_px = metersToRadius(RADIUS_meters, mapView, latitude);
-            marker.setBounds(0, 0, radius_px, radius_px);
+            int width_px = degreesToPixels(0.001, mapView, latitude);
+            int height_px = degreesToPixels(0.001, mapView, 0);
+            marker.setBounds(0, 0, width_px, height_px);
             overlayItem.setMarker(marker);
         }
         
@@ -55,8 +55,8 @@ public class SignalItemizedOverlay extends ItemizedOverlay<OverlayItem> {
         super.draw(canvas, mapView, false);
     }
     
-    public static int metersToRadius(float meters, MapView map, double latitude) {
-        return (int) (map.getProjection().metersToEquatorPixels(meters) * (1/ Math.cos(Math.toRadians(latitude))));         
+    public static int degreesToPixels(double degrees, MapView map, double latitude) {
+        return (int) (map.getProjection().metersToEquatorPixels((float) (degrees*111319.9)) * Math.cos(Math.toRadians(latitude)));         
     }
 
     public void populateOverlay() {
