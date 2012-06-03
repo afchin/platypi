@@ -9,7 +9,7 @@ import org.apache.http.message.BasicNameValuePair;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.drawable.ShapeDrawable;
-import android.graphics.drawable.shapes.OvalShape;
+import android.graphics.drawable.shapes.RectShape;
 
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.OverlayItem;
@@ -105,18 +105,15 @@ public class SignalInfo {
         int intensity = (sigStrength_dBm + 113) * 4;
         if (sigStrength_dBm == 0) { intensity = 0; }
 
-        // make the color go linearly from pure blue to pure red
+        // make the color go linearly from pure red to pure green
         // maybe tweak this to do something more clever in the future
         int red = 255 - intensity;
         int green = intensity;
         int blue = 0;
 
-        ShapeDrawable marker = new ShapeDrawable(new OvalShape());
-        // TODO: replace intensity/2 by something appropriate which puts an upper
-        // bound on how opaque the marker will be. The user should be able to see
-        // the underlying map
+        ShapeDrawable marker = new ShapeDrawable(new RectShape());
         marker.getPaint().setColor(Color.argb(OPACITY, red, green, blue));
-        marker.setBounds(0, 0, radius_px, radius_px);
+        marker.setBounds(0, radius_px, radius_px, 0);
         result.setMarker(marker);
 
         return result;
