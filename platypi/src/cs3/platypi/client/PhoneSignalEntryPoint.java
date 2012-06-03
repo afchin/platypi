@@ -44,14 +44,22 @@ import cs3.platypi.shared.SignalMetadata;
 
 public class PhoneSignalEntryPoint implements EntryPoint, ValueChangeHandler<String> {
   final LatLng CALTECH = LatLng.newInstance(34.139, -118.124);
-  final LatLng CALTECH2 = LatLng.newInstance(34.15, -118.124);
-  final LatLng CALTECH1 = LatLng.newInstance(34.139, -118.129);
+  final LatLng CALTECHLB = LatLng.newInstance(34.135909,-118.127854);
+  final LatLng CALTECHUR = LatLng.newInstance(34.141841,-118.121288);
 
   final RichTextArea latitude = new RichTextArea();
   final RichTextArea longitude = new RichTextArea();
+  
+  final RichTextArea LBlat = new RichTextArea(); //left bottom
+  final RichTextArea LBlong = new RichTextArea();
+  final RichTextArea URlat = new RichTextArea(); // upper right
+  final RichTextArea URlong = new RichTextArea();
+  
   PhoneSignal collecter;
 
   private LatLng center;
+  private LatLng LB;
+  private LatLng UR;
   private VerticalPanel vp;
   protected MapWidget map;
   private ListBox carriers;
@@ -93,6 +101,19 @@ public class PhoneSignalEntryPoint implements EntryPoint, ValueChangeHandler<Str
     longitude.setHeight("40px");
     longitude.setWidth("150px");
     
+    LBlat.setText("latitude1");
+    LBlat.setHeight("40px");
+    LBlat.setWidth("150px");
+    LBlong.setText("longitude1");
+    LBlong.setHeight("40px");
+    LBlong.setWidth("150px");
+    URlat.setText("latitude2");
+    URlat.setHeight("40px");
+    URlat.setWidth("150px");
+    URlong.setText("longitude2");
+    URlong.setHeight("40px");
+    URlong.setWidth("150px");
+    
     carriers = new ListBox(true);
     HTML selectCarriers = new HTML("Select carriers");
     
@@ -129,6 +150,60 @@ public class PhoneSignalEntryPoint implements EntryPoint, ValueChangeHandler<Str
 
     });
 
+    Button boundingBox = new Button("Set bounding box", new ClickHandler() {
+      @Override
+      public void onClick(ClickEvent event) {
+        // TODO Auto-generated method stub
+    
+        // leave this for now
+
+        
+        LB = LatLng.newInstance(Double.parseDouble(LBlat.getText()), Double.parseDouble(LBlong.getText()));
+        UR = LatLng.newInstance(Double.parseDouble(URlat.getText()), Double.parseDouble(URlong.getText()));
+        LBlat.setText(Double.toString(CALTECHLB.getLatitude()));
+        LBlong.setText(Double.toString(CALTECHLB.getLongitude()));
+        URlat.setText(Double.toString(CALTECHUR.getLatitude()));
+        URlong.setText(Double.toString(CALTECHUR.getLongitude()));
+        
+        center = LatLng.newInstance((LB.getLatitude() + UR.getLatitude())/2,
+            (LB.getLongitude() + UR.getLongitude())/2);
+
+        
+        Maps.loadMapsApi("AIzaSyC7K_2VTNtYJH8uz7pDqa5G5MebAwe309k", "2", false, new Runnable() {
+          public void run() {
+            runApp();
+          }
+        });
+      }
+
+    });
+    
+    Button boundingBoxCaltech = new Button("Set box to Caltech", new ClickHandler() {
+      @Override
+      public void onClick(ClickEvent event) {
+        // TODO Auto-generated method stub
+       // LatLng LB = LatLng.newInstance(Double.parseDouble(LBlat.getText()), Double.parseDouble(LBlong.getText()));
+       // LatLng UR = LatLng.newInstance(Double.parseDouble(URlat.getText()), Double.parseDouble(URlong.getText()));
+        
+        // leave this for now
+        center = CALTECH;
+        latitude.setText(Double.toString(CALTECH.getLatitude()));
+        longitude.setText(Double.toString(CALTECH.getLongitude()));
+        
+        LBlat.setText(Double.toString(CALTECHLB.getLatitude()));
+        LBlong.setText(Double.toString(CALTECHLB.getLongitude()));
+        URlat.setText(Double.toString(CALTECHUR.getLatitude()));
+        URlong.setText(Double.toString(CALTECHUR.getLongitude()));
+        
+        Maps.loadMapsApi("AIzaSyC7K_2VTNtYJH8uz7pDqa5G5MebAwe309k", "2", false, new Runnable() {
+          public void run() {
+            runApp();
+          }
+        });
+      }
+
+    });
+    
     HorizontalPanel hp = new HorizontalPanel();
     
     VerticalPanel carrierSelect = new VerticalPanel();
@@ -141,6 +216,15 @@ public class PhoneSignalEntryPoint implements EntryPoint, ValueChangeHandler<Str
 
     latlongparam.add(latitude);
     latlongparam.add(longitude);
+    
+    HorizontalPanel latlong2 = new HorizontalPanel();
+    latlong2.add(LBlat);
+    latlong2.add(LBlong);
+    latlong2.add(URlat);
+    latlong2.add(URlong);
+    latlong2.add(boundingBox);
+    latlong2.add(boundingBoxCaltech);
+    
     latlongparam.add(setLoc);
     latlongparam.add(caltech);
     
@@ -148,6 +232,7 @@ public class PhoneSignalEntryPoint implements EntryPoint, ValueChangeHandler<Str
     HTML empty = new HTML("<br>");
     addEmpty.add(empty);
     addEmpty.add(latlongparam);
+    addEmpty.add(latlong2);
     
     hp.add(addEmpty);
 
@@ -161,7 +246,7 @@ public class PhoneSignalEntryPoint implements EntryPoint, ValueChangeHandler<Str
   private void runApp(){
     buildUi();
     List<String> carrierParams = new ArrayList<String>();
-    for (int i = 0; i < carriers.getItemCount(); i ++){
+    for (int i = 0; i < carriers.getItemCount(); i++){
        if (carriers.isItemSelected(i)){
          carrierParams.add(carriers.getItemText(i));
        }
