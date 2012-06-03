@@ -12,6 +12,7 @@ import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.MouseEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.user.client.History;
@@ -22,6 +23,9 @@ import com.google.gwt.maps.client.InfoWindowContent;
 import com.google.gwt.maps.client.MapWidget;
 import com.google.gwt.maps.client.Maps;
 import com.google.gwt.maps.client.control.LargeMapControl;
+import com.google.gwt.maps.client.event.PolylineMouseOutHandler;
+import com.google.gwt.maps.client.event.PolylineMouseOutHandler.PolylineMouseOutEvent;
+import com.google.gwt.maps.client.event.PolylineMouseOverHandler;
 import com.google.gwt.maps.client.geom.LatLng;
 import com.google.gwt.maps.client.geom.Size;
 import com.google.gwt.maps.client.overlay.Icon;
@@ -39,8 +43,8 @@ import com.google.gwt.user.client.ui.RootLayoutPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.maps.client.overlay.Polyline;
-
 import cs3.platypi.shared.SignalMetadata;
+import com.google.gwt.maps.client.InfoWindow;
 
 public class PhoneSignalEntryPoint implements EntryPoint, ValueChangeHandler<String> {
   // when this boolean is true, we run the maps api without the key.
@@ -58,6 +62,8 @@ public class PhoneSignalEntryPoint implements EntryPoint, ValueChangeHandler<Str
   final RichTextArea LBlong = new RichTextArea();
   final RichTextArea URlat = new RichTextArea(); // upper right
   final RichTextArea URlong = new RichTextArea();
+  
+  private InfoWindowContent infoWindow;
   
   PhoneSignal collecter;
 
@@ -270,10 +276,12 @@ public class PhoneSignalEntryPoint implements EntryPoint, ValueChangeHandler<Str
     
     for (SignalMetadata pt: list){
       System.out.println(pt.getLatitude() + pt.getLongitude());
+      final double lat = pt.getLatitude();
+      final double lon = pt.getLongitude();
       LatLng newpt = LatLng.newInstance(pt.getLatitude(), pt.getLongitude());
       LatLng newpt2 = LatLng.newInstance(pt.getLatitude(), pt.getLongitude() + 0.000005);
       String color;
-      int strength = pt.getSignal();
+      final int strength = pt.getSignal();
       
       LatLng[] newptArray = new LatLng[2];
       newptArray[0] = newpt;
@@ -293,6 +301,23 @@ public class PhoneSignalEntryPoint implements EntryPoint, ValueChangeHandler<Str
       
       String hexValue = "#" + redHex + greenHex + "00";
       Polyline marker = new Polyline(newptArray, hexValue,10, 0.3);
+      
+      marker.addPolylineMouseOverHandler(new PolylineMouseOverHandler() {
+        @Override
+        public void onMouseOver(PolylineMouseOverEvent event) {
+          map.getInfoWindow().open(LatLng.newInstance(
+              lat, lon), new InfoWindowContent(
+              "Location: " + lat + " " + lon +
+              "<br/>Signal strength: " + ((Integer) strength).toString()));
+        }
+      });
+      marker.addPolylineMouseOutHandler(new PolylineMouseOutHandler() {
+        @Override
+        public void onMouseOut(PolylineMouseOutEvent event) {
+          map.getInfoWindow().close();
+        }
+      });
+      
       map.addOverlay(marker);
 
     }
