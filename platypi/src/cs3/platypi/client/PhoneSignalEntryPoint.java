@@ -43,6 +43,10 @@ import com.google.gwt.maps.client.overlay.Polyline;
 import cs3.platypi.shared.SignalMetadata;
 
 public class PhoneSignalEntryPoint implements EntryPoint, ValueChangeHandler<String> {
+  // when this boolean is true, we run the maps api without the key.
+  // this is for local testing so the maps key error stops popping up.
+  // MAKE SURE THIS IS FALSE BEFORE PUSHING
+  boolean localRun = false;
   final LatLng CALTECH = LatLng.newInstance(34.139, -118.124);
   final LatLng CALTECHLB = LatLng.newInstance(34.135909,-118.127854);
   final LatLng CALTECHUR = LatLng.newInstance(34.141841,-118.121288);
@@ -125,11 +129,7 @@ public class PhoneSignalEntryPoint implements EntryPoint, ValueChangeHandler<Str
       @Override
       public void onClick(ClickEvent event) {
         center = LatLng.newInstance(Double.parseDouble(latitude.getText()), Double.parseDouble(longitude.getText()));
-        Maps.loadMapsApi("AIzaSyC7K_2VTNtYJH8uz7pDqa5G5MebAwe309k", "2", false, new Runnable() {
-          public void run() {
-            runApp();
-          }
-        });
+        loadMap();
 
       }
     });
@@ -141,11 +141,7 @@ public class PhoneSignalEntryPoint implements EntryPoint, ValueChangeHandler<Str
         center = CALTECH;
         latitude.setText(Double.toString(CALTECH.getLatitude()));
         longitude.setText(Double.toString(CALTECH.getLongitude()));
-        Maps.loadMapsApi("AIzaSyC7K_2VTNtYJH8uz7pDqa5G5MebAwe309k", "2", false, new Runnable() {
-          public void run() {
-            runApp();
-          }
-        });
+        loadMap();
       }
 
     });
@@ -169,11 +165,7 @@ public class PhoneSignalEntryPoint implements EntryPoint, ValueChangeHandler<Str
             (LB.getLongitude() + UR.getLongitude())/2);
 
         
-        Maps.loadMapsApi("AIzaSyC7K_2VTNtYJH8uz7pDqa5G5MebAwe309k", "2", false, new Runnable() {
-          public void run() {
-            runApp();
-          }
-        });
+        loadMap();
       }
 
     });
@@ -195,11 +187,7 @@ public class PhoneSignalEntryPoint implements EntryPoint, ValueChangeHandler<Str
         URlat.setText(Double.toString(CALTECHUR.getLatitude()));
         URlong.setText(Double.toString(CALTECHUR.getLongitude()));
         
-        Maps.loadMapsApi("AIzaSyC7K_2VTNtYJH8uz7pDqa5G5MebAwe309k", "2", false, new Runnable() {
-          public void run() {
-            runApp();
-          }
-        });
+        loadMap();
       }
 
     });
@@ -260,6 +248,22 @@ public class PhoneSignalEntryPoint implements EntryPoint, ValueChangeHandler<Str
     addPoints(carrierParams);
   }
   
+  private void loadMap(){
+    if (localRun){
+      Maps.loadMapsApi("", "2", false, new Runnable() {
+        public void run() {
+          runApp();
+        }
+      });
+    } else {
+      Maps.loadMapsApi("AIzaSyC7K_2VTNtYJH8uz7pDqa5G5MebAwe309k", "2", false, new Runnable() {
+        public void run() {
+          runApp();
+        }
+      });
+    }
+  }
+
   private void addPoints(List<String> carrierParams){
     List<SignalMetadata> list = collecter.returnMetadata(carrierParams);
     System.out.println(list.size());
