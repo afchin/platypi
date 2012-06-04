@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" path="test"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="con" path="com.google.gwt.eclipse.core.GWT_CONTAINER"/>
 	<classpathentry kind="con" path="com.google.appengine.eclipse.core.GAE_CONTAINER"/>
-	<classpathentry kind="lib" path="lib/appengine-api-1.0-sdk-1.6.1.jar"/>
-	<classpathentry kind="lib" path="lib/appengine-api-labs-1.6.1.jar"/>
 	<classpathentry kind="lib" path="lib/appengine-jsr107cache-1.6.1.jar"/>
 	<classpathentry kind="lib" path="lib/google_sql.jar"/>
 	<classpathentry kind="lib" path="lib/gwt-maps.jar"/>
@@ -13,5 +12,12 @@
 	<classpathentry kind="lib" path="lib/jdo2-api-2.3-eb.jar"/>
 	<classpathentry kind="lib" path="lib/json-org.jar"/>
 	<classpathentry kind="lib" path="lib/jsr107cache-1.1.jar"/>
+	<classpathentry kind="lib" path="lib/org.springframework.core-3.1.0.RELEASE.jar"/>
+	<classpathentry kind="lib" path="lib/org.springframework.test-3.1.0.RELEASE.jar"/>
+	<classpathentry kind="lib" path="lib/appengine-api-1.0-sdk-1.6.1.jar"/>
+	<classpathentry kind="lib" path="lib/appengine-api-labs-1.6.1.jar"/>
+	<classpathentry kind="lib" path="lib/appengine-testing-1.6.1.jar"/>
+	<classpathentry kind="lib" path="lib/appengine-api-stubs-1.6.1.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
 	<classpathentry kind="output" path="war/WEB-INF/classes"/>
 </classpath>
