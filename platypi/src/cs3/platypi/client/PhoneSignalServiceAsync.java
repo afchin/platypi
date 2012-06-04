@@ -11,6 +11,15 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 public interface PhoneSignalServiceAsync {
 
     /**
+     * Used to get a list of raw signal data.
+     *
+     * @param callback
+     *            the callback to return a list of the metadata of the currently
+     *            available signal info
+     */
+    void getAllSignalList(AsyncCallback<List<SignalMetadata>> callback);
+
+    /**
      * Used to get a list of current signal information.
      *
      * @param callback

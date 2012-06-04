@@ -25,6 +25,24 @@ import cs3.platypi.shared.SignalMetadata;
 public class PhoneSignalServiceImpl extends RemoteServiceServlet implements PhoneSignalService {
 
     @Override
+    public List<SignalMetadata> getAllSignalList() {
+        PersistenceManager manager = PMF.getManager();
+        try {
+            ArrayList<SignalMetadata> signalInfo = new ArrayList<SignalMetadata>();
+            Extent<SignalInfo> allSignalInfo = manager.getExtent(SignalInfo.class);
+
+            for (SignalInfo s : allSignalInfo) {
+                signalInfo.add(s.getSignalMetadata());
+            }
+
+            return signalInfo;
+
+        } finally {
+            manager.close();
+        }
+    }
+    
+    @Override
     public List<SignalMetadata> getSignalList(Double minLatitude, Double minLongitude,
             Double maxLatitude, Double maxLongitude, List<String> carrierParams, List<String> phoneTypes) {
         return getSignalList(minLatitude, minLongitude, maxLatitude, maxLongitude, carrierParams, phoneTypes, null);    

@@ -14,7 +14,14 @@ import cs3.platypi.shared.SignalMetadata;
 public interface PhoneSignalService extends RemoteService {
 
     /**
-     * Used to get a list of current signal information.
+     * Used to get a list of raw signal data.
+     *
+     * @return a list of the metadata of  all signal info
+     */
+    List<SignalMetadata> getAllSignalList();
+
+    /**
+     * Used to get a list of current signal information based on parameters.
      *
      * @param required: minLatitude, minLongitude, maxLatitude, maxLongitude
      *        optional: carrierParams, phoneTypes, clientId
