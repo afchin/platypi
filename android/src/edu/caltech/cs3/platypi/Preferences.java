@@ -38,7 +38,6 @@ public class Preferences extends PreferenceActivity implements OnSharedPreferenc
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences,
             String key) {
         Pref p = Pref.valueOf(key);
-        Log.d("froo","here we are");
         switch (p) {
         case PREF_COLLECT_DATA:
         case PREF_COLLECTION_FREQ:

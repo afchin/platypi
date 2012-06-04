@@ -10,7 +10,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.google.android.maps.MapActivity;
+import com.google.android.maps.MapController;
 import com.google.android.maps.MapView;
+import com.google.android.maps.MyLocationOverlay;
 import com.google.android.maps.Overlay;
 
 /**
@@ -23,6 +25,7 @@ public class SignalFinderActivity extends MapActivity {
     private SignalFinderApp app;
     private List<Overlay> mapOverlays;
     private SignalItemizedOverlay itemizedOverlay;
+    private MapView mapView;
 
     @Override
     protected boolean isRouteDisplayed() { return false; }
@@ -33,12 +36,11 @@ public class SignalFinderActivity extends MapActivity {
         setContentView(R.layout.signalfinder);
         app = (SignalFinderApp) getApplication();
 
-        MapView mapView = (MapView) findViewById(R.id.mapview);
+        mapView = (MapView) findViewById(R.id.mapview);
         mapView.setBuiltInZoomControls(true);
 
         mapOverlays = mapView.getOverlays();
-        itemizedOverlay = new SignalItemizedOverlay(this);
-        loadLocalData();
+        loadData();
     }
 
     public void loadLocalData() {
@@ -68,11 +70,9 @@ public class SignalFinderActivity extends MapActivity {
                     signalInfo.setLatitude(cursor.getDouble(cursor.getColumnIndex(SignalData.C_LATITTUDE)));
                     signalInfo.setLongitude(cursor.getDouble(cursor.getColumnIndex(SignalData.C_LONGITUDE)));
                     signalInfo.setSigStrength_dBm(cursor.getInt(cursor.getColumnIndex(SignalData.C_SIGNAL)));
-                    Log.d("foo", signalInfo.toString());
 
                     itemizedOverlay.addOverlay(signalInfo.overlayItem(30));
                 }
-                Log.d("foo","got this far");
                 itemizedOverlay.populateOverlay();
                 mapOverlays.add(itemizedOverlay);
             }
