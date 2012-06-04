@@ -45,6 +45,7 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.maps.client.overlay.Polyline;
 import cs3.platypi.shared.SignalMetadata;
 import com.google.gwt.maps.client.InfoWindow;
+import com.google.gwt.user.client.Window;
 
 public class PhoneSignalEntryPoint implements EntryPoint, ValueChangeHandler<String> {
   // when this boolean is true, we run the maps api without the key.
@@ -54,9 +55,6 @@ public class PhoneSignalEntryPoint implements EntryPoint, ValueChangeHandler<Str
   final LatLng CALTECH = LatLng.newInstance(34.139, -118.124);
   final LatLng CALTECHLB = LatLng.newInstance(34.135909,-118.127854);
   final LatLng CALTECHUR = LatLng.newInstance(34.141841,-118.121288);
-
-  final RichTextArea latitude = new RichTextArea();
-  final RichTextArea longitude = new RichTextArea();
   
   final RichTextArea LBlat = new RichTextArea(); //left bottom
   final RichTextArea LBlong = new RichTextArea();
@@ -73,10 +71,20 @@ public class PhoneSignalEntryPoint implements EntryPoint, ValueChangeHandler<Str
   private VerticalPanel vp;
   protected MapWidget map;
   private ListBox carriers;
+  private ListBox phoneTypes;
   // should query database to get this
   private String[] allCarriers = {
-    "AT&T", "Verizon", "T-Mobile", "Sprint"  
+      "att", "verizon", "tmobile", "sprint"  
   };
+  private String[] allPhoneTypes = {
+    "0", "1","2"  
+  };
+  
+  private double minLatitude;
+  private double minLongitude;
+  private double maxLatitude;
+  private double maxLongitude;
+  
   /**
    * Create a remote service proxy to talk to the server-side service.
    */
@@ -103,14 +111,6 @@ public class PhoneSignalEntryPoint implements EntryPoint, ValueChangeHandler<Str
     //          RootPanel.get("application").add(collecter);
     //      RootPanel.get("loading").setVisible(false);
 
-
-    latitude.setText("latitude");
-    latitude.setHeight("40px");
-    latitude.setWidth("150px");
-    longitude.setText("longitude");
-    longitude.setHeight("40px");
-    longitude.setWidth("150px");
-    
     LBlat.setText("latitude1");
     LBlat.setHeight("40px");
     LBlat.setWidth("150px");
@@ -125,32 +125,17 @@ public class PhoneSignalEntryPoint implements EntryPoint, ValueChangeHandler<Str
     URlong.setWidth("150px");
     
     carriers = new ListBox(true);
-    HTML selectCarriers = new HTML("Select carriers");
+    phoneTypes = new ListBox(true);
+    HTML selectCarriers = new HTML("Carriers");
+    HTML selectPhoneTypes = new HTML("Phone Types");
     
     for (String c: allCarriers){
       carriers.addItem(c);
     }
     
-    Button setLoc = new Button("Set map center", new ClickHandler() {
-      @Override
-      public void onClick(ClickEvent event) {
-        center = LatLng.newInstance(Double.parseDouble(latitude.getText()), Double.parseDouble(longitude.getText()));
-        loadMap();
-
-      }
-    });
-
-    Button caltech = new Button("Center at Caltech", new ClickHandler() {
-      @Override
-      public void onClick(ClickEvent event) {
-        // TODO Auto-generated method stub
-        center = CALTECH;
-        latitude.setText(Double.toString(CALTECH.getLatitude()));
-        longitude.setText(Double.toString(CALTECH.getLongitude()));
-        loadMap();
-      }
-
-    });
+    for (String t : allPhoneTypes) {
+      phoneTypes.addItem(t);
+    }
 
     Button boundingBox = new Button("Set bounding box", new ClickHandler() {
       @Override
@@ -159,18 +144,19 @@ public class PhoneSignalEntryPoint implements EntryPoint, ValueChangeHandler<Str
     
         // leave this for now
 
+        try {
+          minLatitude = Double.parseDouble(LBlat.getText());
+          minLongitude = Double.parseDouble(LBlong.getText());
+          maxLatitude = Double.parseDouble(URlat.getText());
+          maxLongitude = Double.parseDouble(URlong.getText());          
+        } catch (NumberFormatException e){
+          Window.alert("Check your params");
+        }
+
         
         LB = LatLng.newInstance(Double.parseDouble(LBlat.getText()), Double.parseDouble(LBlong.getText()));
         UR = LatLng.newInstance(Double.parseDouble(URlat.getText()), Double.parseDouble(URlong.getText()));
-        LBlat.setText(Double.toString(CALTECHLB.getLatitude()));
-        LBlong.setText(Double.toString(CALTECHLB.getLongitude()));
-        URlat.setText(Double.toString(CALTECHUR.getLatitude()));
-        URlong.setText(Double.toString(CALTECHUR.getLongitude()));
-        
-        center = LatLng.newInstance((LB.getLatitude() + UR.getLatitude())/2,
-            (LB.getLongitude() + UR.getLongitude())/2);
 
-        
         loadMap();
       }
 
@@ -180,18 +166,19 @@ public class PhoneSignalEntryPoint implements EntryPoint, ValueChangeHandler<Str
       @Override
       public void onClick(ClickEvent event) {
         // TODO Auto-generated method stub
-       // LatLng LB = LatLng.newInstance(Double.parseDouble(LBlat.getText()), Double.parseDouble(LBlong.getText()));
-       // LatLng UR = LatLng.newInstance(Double.parseDouble(URlat.getText()), Double.parseDouble(URlong.getText()));
         
         // leave this for now
         center = CALTECH;
-        latitude.setText(Double.toString(CALTECH.getLatitude()));
-        longitude.setText(Double.toString(CALTECH.getLongitude()));
         
         LBlat.setText(Double.toString(CALTECHLB.getLatitude()));
         LBlong.setText(Double.toString(CALTECHLB.getLongitude()));
         URlat.setText(Double.toString(CALTECHUR.getLatitude()));
         URlong.setText(Double.toString(CALTECHUR.getLongitude()));
+        
+        minLatitude = Double.parseDouble(LBlat.getText());
+        minLongitude = Double.parseDouble(LBlong.getText());
+        maxLatitude = Double.parseDouble(URlat.getText());
+        maxLongitude = Double.parseDouble(URlong.getText());
         
         loadMap();
       }
@@ -204,13 +191,13 @@ public class PhoneSignalEntryPoint implements EntryPoint, ValueChangeHandler<Str
     carrierSelect.add(selectCarriers);
     carrierSelect.add(carriers);
     
+    VerticalPanel phoneTypeSelect = new VerticalPanel();
+    phoneTypeSelect.add(selectPhoneTypes);
+    phoneTypeSelect.add(phoneTypes);
+    
     hp.add(carrierSelect);
-    
-    HorizontalPanel latlongparam = new HorizontalPanel();
+    hp.add(phoneTypeSelect);
 
-    latlongparam.add(latitude);
-    latlongparam.add(longitude);
-    
     HorizontalPanel latlong2 = new HorizontalPanel();
     latlong2.add(LBlat);
     latlong2.add(LBlong);
@@ -219,13 +206,9 @@ public class PhoneSignalEntryPoint implements EntryPoint, ValueChangeHandler<Str
     latlong2.add(boundingBox);
     latlong2.add(boundingBoxCaltech);
     
-    latlongparam.add(setLoc);
-    latlongparam.add(caltech);
-    
     VerticalPanel addEmpty = new VerticalPanel();
     HTML empty = new HTML("<br>");
     addEmpty.add(empty);
-    addEmpty.add(latlongparam);
     addEmpty.add(latlong2);
     
     hp.add(addEmpty);
@@ -238,6 +221,8 @@ public class PhoneSignalEntryPoint implements EntryPoint, ValueChangeHandler<Str
   }
 
   private void runApp(){
+    center = LatLng.newInstance((minLatitude + maxLatitude)/2,
+        (minLongitude + maxLongitude)/2);
     buildUi();
     List<String> carrierParams = new ArrayList<String>();
     for (int i = 0; i < carriers.getItemCount(); i++){
@@ -245,13 +230,22 @@ public class PhoneSignalEntryPoint implements EntryPoint, ValueChangeHandler<Str
          carrierParams.add(carriers.getItemText(i));
        }
     }
-    if (carrierParams.isEmpty()) {
-      // add all carriers to the list
-      for (String c: allCarriers){
-        carrierParams.add(c);
+    if (carrierParams.isEmpty()){
+      carrierParams = null;
+    }
+    List<String> phoneTypeParams = new ArrayList<String>();
+    for (int i = 0; i < phoneTypes.getItemCount(); i++){
+      if (phoneTypes.isItemSelected(i)){
+        phoneTypeParams.add(phoneTypes.getItemText(i));
       }
     }
-    addPoints(carrierParams);
+    if (phoneTypeParams.isEmpty()){
+      phoneTypeParams = null;
+    }
+    
+    addPoints(minLatitude, minLongitude, 
+       maxLatitude, maxLongitude,carrierParams,
+        phoneTypeParams);
   }
   
   private void loadMap(){
@@ -270,8 +264,10 @@ public class PhoneSignalEntryPoint implements EntryPoint, ValueChangeHandler<Str
     }
   }
 
-  private void addPoints(List<String> carrierParams){
-    List<SignalMetadata> list = collecter.returnMetadata(carrierParams);
+  private void addPoints(Double minLatitude, Double minLongitude,
+      Double maxLatitude, Double maxLongitude, List<String> carrierParams, List<String> phoneParams){
+    List<SignalMetadata> list = collecter.returnMetadata(minLatitude, minLongitude,
+        maxLatitude, maxLongitude, carrierParams, phoneParams);
     System.out.println(list.size());
     
     for (SignalMetadata pt: list){
@@ -300,7 +296,7 @@ public class PhoneSignalEntryPoint implements EntryPoint, ValueChangeHandler<Str
       }
       
       String hexValue = "#" + redHex + greenHex + "00";
-      Polyline marker = new Polyline(newptArray, hexValue,10, 0.3);
+      Polyline marker = new Polyline(newptArray, hexValue,10, 0.7);
       
       marker.addPolylineMouseOverHandler(new PolylineMouseOverHandler() {
         @Override

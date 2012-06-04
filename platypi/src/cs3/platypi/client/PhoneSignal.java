@@ -33,13 +33,13 @@ public class PhoneSignal extends Composite implements ClickHandler, ChangeHandle
 
         // Example of using saveSignal and getSignalList
         List<SignalMetadata> signalList = new ArrayList<SignalMetadata>();
-        SignalMetadata s1 = new SignalMetadata("judy", "att", 34.137987,-118.125558, 15.5, "1", 123, 0);
-        SignalMetadata s2 = new SignalMetadata("judy", "att", 4.3, 5.1, 15.5, "1", 123, 3);
+        SignalMetadata s1 = new SignalMetadata("judy", "att", 34.138236,-118.126202, 15.5, "1", 123, 0);
+        SignalMetadata s2 = new SignalMetadata("judy", "att", 34.139222,-118.125483, 15.5, "1", 123, -69);
         signalList.add(s1);
         signalList.add(s2);
         // Do not call both save and get in the same run. 
 //         saver.saveSignal(signalList);
-        lister.getSignalList();
+        lister.getAllSignalList();
 
         VerticalPanel outerVp = new VerticalPanel();
         outerVp.add(new HTML("<h2>Available Signals</h2>"));
@@ -49,9 +49,10 @@ public class PhoneSignal extends Composite implements ClickHandler, ChangeHandle
         outerVp.add(mainSignalList);
         
         
-        System.out.println(signalMetadataList.size());
 
+//
         initWidget(outerVp);
+        System.out.println(signalMetadataList.size());
     }
 
     @Override
@@ -68,7 +69,10 @@ public class PhoneSignal extends Composite implements ClickHandler, ChangeHandle
       return signalMetadataList;
     }
     
-    public List<SignalMetadata> returnMetadata(List<String> carrierParams){
+    public List<SignalMetadata> returnMetadata(Double minLatitude, Double minLongitude,
+        Double maxLatitude, Double maxLongitude, List<String> carrierParams, List<String> phoneParams){
+      lister.getSignalList(minLatitude, minLongitude,
+          maxLatitude, maxLongitude, carrierParams, phoneParams);
       return signalMetadataList;
     }
     

@@ -1,2 +1,3 @@
 # Module signal
 # RPC service class, partial path of RPC policy file
+cs3.platypi.client.PhoneSignalService, F7AAFB020A3446B6F0B6FE53952A117B.gwt.rpc
