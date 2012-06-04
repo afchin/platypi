@@ -18,6 +18,8 @@ public interface PhoneSignalServiceAsync {
      *            available signal info
      */
     void getAllSignalList(AsyncCallback<List<SignalMetadata>> callback);
+    
+    void getAllSignalListAvg(AsyncCallback<List<SignalMetadata>> callback);
 
     /**
      * Used to get a list of current signal information.

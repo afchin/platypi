@@ -48,6 +48,8 @@ public interface PhoneSignalService extends RemoteService {
      */
     void saveSignalInfo(List<SignalMetadata> signalInfo);
 
+    List<SignalMetadata> getAllSignalListAvg();
+
     /**
      * Used to get a list of current signal information.
      *
