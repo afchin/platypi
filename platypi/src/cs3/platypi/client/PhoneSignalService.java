@@ -17,15 +17,20 @@ public interface PhoneSignalService extends RemoteService {
      * Used to get a list of current signal information.
      * 
      * @return a list of the metadata of the currently available signal info
-     */
-    List<SignalMetadata> getSignalList();
+     */    
+    List<SignalMetadata> getSignalList(Double minLatitude, Double minLongitude,
+            Double maxLatitude, Double maxLongitude, List<String> carrierParams, List<String> phoneTypes,
+            String clientId);
 
-    /**
-     * Used to get a list of current signal information.
-     * 
-     * @return a list of the metadata of the currently available signal info
-     */
-    List<SignalMetadata> getSignalList(List<String> carrierParams);
+    List<SignalMetadata> getSignalList(Double minLatitude, Double minLongitude, 
+            Double maxLatitude, Double maxLongitude, List<String> carrierParams, List<String> phoneTypes);
+    
+    List<SignalMetadata> getSignalList(Double minLatitude, Double minLongitude,
+            Double maxLatitude, Double maxLongitude, List<String> params);
+
+    List<SignalMetadata> getSignalList(Double minLatitude, Double minLongitude,
+            Double maxLatitude, Double maxLongitude);
+    
     /**
      * Used to save a signal.
      * 
@@ -34,4 +39,10 @@ public interface PhoneSignalService extends RemoteService {
      */
     void saveSignalInfo(List<SignalMetadata> signalInfo);
 
+    /**
+     * Used to get a list of current signal information.
+     * 
+     * @return a list of the metadata of the currently available signal info
+     */
+    
 }

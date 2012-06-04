@@ -107,7 +107,7 @@ public class SignalInfoAvg {
     public void update(int signal) {
         // For averaging purposes
         if (signal == 0) {
-            signal = -115;
+            signal = -113;
         }
         
         this.signal = ((1 - this.decay) * this.numSignals * this.signal

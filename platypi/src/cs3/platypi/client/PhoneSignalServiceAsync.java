@@ -9,25 +9,26 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
  * The client side stub for the RPC service.
  */
 public interface PhoneSignalServiceAsync {
-
-    /**
-     * Used to get a list of current signal information.
-     * 
-     * @param callback
-     *            the callback to return a list of the metadata of the currently
-     *            available signal info
-     */
-    void getSignalList(AsyncCallback<List<SignalMetadata>> callback);
-
-    /**
-     * Used to get a list of current signal information.
-     * 
-     * @param callback
-     *            the callback to return a list of the metadata of the currently
-     *            available signal info
-     */
-    void getSignalList(List<String> carrierParams, AsyncCallback<List<SignalMetadata>> callback);
     
+    /**
+     * Used to get a list of current signal information.
+     * 
+     * @param callback
+     *            the callback to return a list of the metadata of the currently
+     *            available signal info
+     */
+    void getSignalList(Double minLatitude, Double minLongitude, 
+            Double maxLatitude, Double maxLongitude, List<String> carrierParams, List<String> phoneTypes,
+            String clientId, AsyncCallback<List<SignalMetadata>> callback);
+    
+    void getSignalList(Double minLatitude, Double minLongitude, 
+            Double maxLatitude, Double maxLongitude, List<String> carrierParams, List<String> phoneTypes, AsyncCallback<List<SignalMetadata>> callback);
+    
+    void getSignalList(Double minLatitude, Double minLongitude, 
+            Double maxLatitude, Double maxLongitude, List<String> params, AsyncCallback<List<SignalMetadata>> callback);
+    
+    void getSignalList(Double minLatitude, Double minLongitude, 
+            Double maxLatitude, Double maxLongitude, AsyncCallback<List<SignalMetadata>> callback);
     /**
      * Used to save a signal.
      * 

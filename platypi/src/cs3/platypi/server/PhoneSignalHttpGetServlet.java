@@ -23,7 +23,18 @@ public class PhoneSignalHttpGetServlet extends HttpServlet{
     
     public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         String msg = "SignalFinderAPI=1.0\n";
-        ArrayList<SignalMetadata> signalList = (ArrayList<SignalMetadata>) collabService.getSignalList();
+        String clientId = req.getParameter("clientId");
+        Double minLatitude = Double.parseDouble(req.getParameter("minLatitude"));
+        Double minLongitude = Double.parseDouble(req.getParameter("minLongitude"));
+        Double maxLatitude = Double.parseDouble(req.getParameter("maxLatitude"));
+        Double maxLongitude = Double.parseDouble(req.getParameter("maxLongitude"));
+        String phoneType = req.getParameter("phoneType");
+        String carrier = req.getParameter("carrier");
+        List<String> phoneTypes = new ArrayList<String>(
+                Arrays.asList(phoneType));
+        List<String> carriers = new ArrayList<String>(
+                Arrays.asList(carrier));
+        ArrayList<SignalMetadata> signalList = (ArrayList<SignalMetadata>) collabService.getSignalList(minLatitude, minLongitude, maxLatitude, maxLongitude, carriers, phoneTypes, clientId);
         JSONArray jsonSignalList = new JSONArray();
         
         try {
