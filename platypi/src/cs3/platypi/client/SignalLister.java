@@ -19,15 +19,31 @@ public class SignalLister implements AsyncCallback<List<SignalMetadata>> {
   public SignalLister(PhoneSignal signalCollacter) {
     this.signalCollacter = signalCollacter;
   }
-
-  public void getSignalList(List<String> carrierParams) {
-    System.out.println("Fetching signal list");
-    signalCollacter.signalService.getSignalList(carrierParams, this);
-  }
   
-  public void getSignalList() {
+  public void getAllSignalList() {
+      System.out.println("Fetching signal list");
+      signalCollacter.signalService.getAllSignalList(this);
+  }
+
+  public void getSignalList(Double minLatitude, Double minLongitude,
+          Double maxLatitude, Double maxLongitude, List<String> carrierParams, List<String> phoneTypes) {
     System.out.println("Fetching signal list");
-    signalCollacter.signalService.getSignalList(this);
+    signalCollacter.signalService.getSignalList(minLatitude, 
+            minLongitude, maxLatitude, maxLongitude, carrierParams, phoneTypes, this);
+  }
+
+  public void getSignalList(Double minLatitude, Double minLongitude,
+          Double maxLatitude, Double maxLongitude, List<String> params) {
+    System.out.println("Fetching signal list");
+    signalCollacter.signalService.getSignalList(minLatitude, 
+            minLongitude, maxLatitude, maxLongitude, params, this);
+  }
+
+  public void getSignalList(Double minLatitude, Double minLongitude,
+          Double maxLatitude, Double maxLongitude) {
+    System.out.println("Fetching signal list");
+    signalCollacter.signalService.getSignalList(minLatitude, 
+            minLongitude, maxLatitude, maxLongitude, this);
   }
 
   @Override
@@ -55,6 +71,6 @@ public class SignalLister implements AsyncCallback<List<SignalMetadata>> {
         //                        + meta.getSignal());
       }
     }
-    
+
   }
 }

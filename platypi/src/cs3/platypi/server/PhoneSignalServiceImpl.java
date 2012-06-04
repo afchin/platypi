@@ -23,13 +23,31 @@ import cs3.platypi.shared.SignalMetadata;
  */
 @SuppressWarnings("serial")
 public class PhoneSignalServiceImpl extends RemoteServiceServlet implements PhoneSignalService {
+
+    @Override
+    public List<SignalMetadata> getAllSignalList() {
+        PersistenceManager manager = PMF.getManager();
+        try {
+            ArrayList<SignalMetadata> signalInfo = new ArrayList<SignalMetadata>();
+            Extent<SignalInfo> allSignalInfo = manager.getExtent(SignalInfo.class);
+
+            for (SignalInfo s : allSignalInfo) {
+                signalInfo.add(s.getSignalMetadata());
+            }
+
+            return signalInfo;
+
+        } finally {
+            manager.close();
+        }
+    }
     
     @Override
     public List<SignalMetadata> getSignalList(Double minLatitude, Double minLongitude,
             Double maxLatitude, Double maxLongitude, List<String> carrierParams, List<String> phoneTypes) {
         return getSignalList(minLatitude, minLongitude, maxLatitude, maxLongitude, carrierParams, phoneTypes, null);    
     }
-    
+
     @Override
     public List<SignalMetadata> getSignalList(Double minLatitude, Double minLongitude, 
             Double maxLatitude, Double maxLongitude, List<String> params) {
@@ -39,33 +57,33 @@ public class PhoneSignalServiceImpl extends RemoteServiceServlet implements Phon
         if (paramList.containsAll(params)) {
             return getSignalList(minLatitude, minLongitude, maxLatitude, null, params, null);
         } else {
-            return getSignalList(minLatitude, minLongitude, maxLatitude, maxLongitude, params, null, null);  
+            return getSignalList(minLatitude, minLongitude, maxLatitude, maxLongitude, params, null, null);
         }
     }
-    
+
     @Override
-    public List<SignalMetadata> getSignalList(Double minLatitude, Double minLongitude, 
+    public List<SignalMetadata> getSignalList(Double minLatitude, Double minLongitude,
             Double maxLatitude, Double maxLongitude) {
-        return getSignalList(minLatitude, minLongitude, maxLatitude, maxLongitude, null, null, null);    
+        return getSignalList(minLatitude, minLongitude, maxLatitude, maxLongitude, null, null, null);
     }
 
     @Override
     public List<SignalMetadata> getSignalList(Double minLatitude, Double minLongitude, 
             Double maxLatitude, Double maxLongitude, List<String> carrierParams, List<String> phoneTypes, String clientId) {
         PersistenceManager manager = PMF.getManager();
-        
+
         // If no carrier is specified, show points from all carriers
         if (carrierParams == null) {
             String[] carrierList = {"att", "verizon", "tmobile", "sprint"};
             carrierParams = Arrays.asList(carrierList);
         }
-        
+
         // If no phoneType is specified, show points from all phoneTypes
         if (phoneTypes == null) {
             String[] phoneList = {"0", "1", "2", "3"};
             phoneTypes = Arrays.asList(phoneList);
         }
-        
+
         // If user requests data for a region of size larger than 1.0000 by 1.0000 (about 11km by 11km),
         // only the center 1.0000 by 1.0000 of data will be returned
         if (maxLatitude - minLatitude > 1.0) {
@@ -78,33 +96,33 @@ public class PhoneSignalServiceImpl extends RemoteServiceServlet implements Phon
             maxLongitude = centerl + .5;
             minLongitude = centerl - .5;
         }
-        
+
         try {
-            ArrayList<SignalMetadata> signalInfo = new ArrayList<SignalMetadata>();            
-            
+            ArrayList<SignalMetadata> signalInfo = new ArrayList<SignalMetadata>();
+
             // If clientId is absent, returns data within the given geographic box
             // for the given phoneType and carrier from the consolidated datastore
             if (clientId == null) {
                 Query q = manager.newQuery(SignalInfoAvg.class);
                 q.declareImports("import java.util.List");
-                Object[] parameters = {minLatitude, maxLatitude, carrierParams, phoneTypes};               
+                Object[] parameters = {minLatitude, maxLatitude, carrierParams, phoneTypes};
                 q.declareParameters("Double minLatitude, Double maxLatitude, List carrierParams, List phoneTypes");
                 q.setFilter("latitude >= minLatitude && latitude <= maxLatitude && carrierParams.contains(carrier) && phoneTypes.contains(phoneType)");
-                
+
                 List<SignalInfoAvg> allSignalInfo = (List<SignalInfoAvg>) q.executeWithArray(parameters);
                 //Extent<SignalInfo> allSignalInfo = manager.getExtent(SignalInfo.class);
-                
+
                 ArrayList<SignalInfoAvg> filtered = new ArrayList<SignalInfoAvg>();
-                for(SignalInfoAvg savg: allSignalInfo) {
+                for (SignalInfoAvg savg: allSignalInfo) {
                     if (savg.getLongitude() >= minLongitude && savg.getLongitude() <= maxLongitude) {
                         filtered.add(savg);
                     }
                 }
-                
+
                 for (SignalInfoAvg s : filtered) {
                     signalInfo.add(s.getSignalMetadata());
                 }
-                
+
             } else {
                 // If clientId is present, returns raw data of the given clientId,
                 // phoneType, and carrier within the given geographic box
@@ -118,12 +136,12 @@ public class PhoneSignalServiceImpl extends RemoteServiceServlet implements Phon
                 //Extent<SignalInfo> allSignalInfo = manager.getExtent(SignalInfo.class);
 
                 ArrayList<SignalInfo> filtered = new ArrayList<SignalInfo>();
-                for(SignalInfo s: allSignalInfo) {
+                for (SignalInfo s: allSignalInfo) {
                     if (s.getLongitude() >= minLongitude && s.getLongitude() <= maxLongitude) {
                         filtered.add(s);
                     }
                 }
-                
+
                 for (SignalInfo s : filtered) {
                     signalInfo.add(s.getSignalMetadata());
                 }
@@ -134,7 +152,7 @@ public class PhoneSignalServiceImpl extends RemoteServiceServlet implements Phon
             manager.close();
         }
     }
-    
+
     @Override
     public void saveSignalInfo(List<SignalMetadata> signalInfo) {
         PersistenceManager manager = PMF.getManager();

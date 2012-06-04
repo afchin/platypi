@@ -20,7 +20,7 @@ public class PhoneSignalHttpGetAllServlet extends HttpServlet{
     
     public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         String msg = "SignalFinderAPI=1.0\n";
-        ArrayList<SignalMetadata> signalList = (ArrayList<SignalMetadata>) collabService.getSignalList();
+        ArrayList<SignalMetadata> signalList = (ArrayList<SignalMetadata>) collabService.getAllSignalList();
         JSONArray jsonSignalList = new JSONArray();
         
         try {
