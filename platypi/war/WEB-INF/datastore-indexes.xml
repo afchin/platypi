@@ -1,0 +1,8 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<datastore-indexes  autoGenerate="true">
+    <datastore-index kind="SignalInfoAvg" ancestor="false" source="manual">
+        <property name="carrier" direction="asc"/>
+        <property name="phoneType" direction="asc"/>
+        <property name="latitude" direction="asc"/>
+    </datastore-index>
+</datastore-indexes> 

@@ -14,13 +14,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import cs3.platypi.shared.SignalMetadata;
- 
+
 @SuppressWarnings("serial")
-public class PhoneSignalHttpGetServlet extends HttpServlet{
-    
+public class PhoneSignalHttpGetServlet extends HttpServlet {
+
     private PhoneSignalServiceImpl collabService = new PhoneSignalServiceImpl();
     String[] carrierList = {"att", "verizon", "tmobile", "sprint"};
-    
+
     public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         String msg = "SignalFinderAPI=1.0\n";
         String clientId = req.getParameter("clientId");
@@ -36,7 +36,7 @@ public class PhoneSignalHttpGetServlet extends HttpServlet{
                 Arrays.asList(carrier));
         ArrayList<SignalMetadata> signalList = (ArrayList<SignalMetadata>) collabService.getSignalList(minLatitude, minLongitude, maxLatitude, maxLongitude, carriers, phoneTypes, clientId);
         JSONArray jsonSignalList = new JSONArray();
-        
+
         try {
             for (SignalMetadata s : signalList) {
                 JSONObject signalObj = new JSONObject();
@@ -51,7 +51,7 @@ public class PhoneSignalHttpGetServlet extends HttpServlet{
             resp.sendError(HttpServletResponse.SC_BAD_REQUEST);
             return;
         }
-       
+
         resp.getWriter().write(msg + "0\n" + jsonSignalList.toString());
         resp.setStatus(HttpServletResponse.SC_OK);
     }

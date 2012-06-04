@@ -109,7 +109,7 @@ public class SignalInfoAvg {
         if (signal == 0) {
             signal = -113;
         }
-        
+
         this.signal = ((1 - this.decay) * this.numSignals * this.signal
                       + (1 + this.numSignals * this.decay) * signal) / (this.numSignals + 1);
         this.numSignals += 1;
