@@ -41,7 +41,25 @@ public class PhoneSignalServiceImpl extends RemoteServiceServlet implements Phon
             manager.close();
         }
     }
-    
+
+    @Override
+    public List<SignalMetadata> getAllSignalListAvg() {
+        PersistenceManager manager = PMF.getManager();
+        try {
+            ArrayList<SignalMetadata> signalInfo = new ArrayList<SignalMetadata>();
+            Extent<SignalInfoAvg> allSignalInfoAvg = manager.getExtent(SignalInfoAvg.class);
+
+            for (SignalInfoAvg s : allSignalInfoAvg) {
+                signalInfo.add(s.getSignalMetadata());
+            }
+
+            return signalInfo;
+
+        } finally {
+            manager.close();
+        }
+    }
+
     @Override
     public List<SignalMetadata> getSignalList(Double minLatitude, Double minLongitude,
             Double maxLatitude, Double maxLongitude, List<String> carrierParams, List<String> phoneTypes) {

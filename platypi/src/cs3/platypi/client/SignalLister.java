@@ -24,6 +24,11 @@ public class SignalLister implements AsyncCallback<List<SignalMetadata>> {
       System.out.println("Fetching signal list");
       signalCollacter.signalService.getAllSignalList(this);
   }
+  
+  public void getAllSignalListAvg() {
+      System.out.println("Fetching signal list");
+      signalCollacter.signalService.getAllSignalListAvg(this);
+  }
 
   public void getSignalList(Double minLatitude, Double minLongitude,
           Double maxLatitude, Double maxLongitude, List<String> carrierParams, List<String> phoneTypes) {
